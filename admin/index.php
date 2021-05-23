@@ -1,9 +1,9 @@
 <?php
-include 'config.php';
-// session_start();
-// if(isset($_SESSION["username"])){
+include_once 'config.php';
+ session_start();
+//if(isset($_SESSION["username"])){
 //   header("Location:{$hostname}/admin/post.php");
-// }
+ //}
 ?>
 
 <!doctype html>
@@ -41,7 +41,7 @@ include 'config.php';
                         <!-- /Form  End -->
                       <?php
                       include_once 'database.php';
-                      include_once 'config.php';
+                    //  include_once 'config.php';
                       $db=new Database();
                       if(isset($_POST['login'])){
                             // if(empty($_POST['username']) || empty($_POST['password'])){
@@ -49,19 +49,26 @@ include 'config.php';
                             //  }else{
                                $username=$db->escapeString($_POST['username']);
                                $password=md5($db->escapeString($_POST['password']));
+                               echo $username. "<br>". $password;
                                $db->selectData('user','user_id,username,role',null,"username='$username'AND password='$password'",null,null);
                                 $result=$db->getResult();
+                              //  var_dump($result);
+                            //   print_r($result);
                                 if(!empty($result)){
-                                  session_start();
+                                //  session_start();
                                   //set session variables
                           //        if(mysqli_num_rows($result)>0){
-                                  while($row=mysqli_fetch_assoc($result)){
-                                      $_SESSION['username']=$row['username'];
-                                      $_SESSION['user_id']=$row['user_id'];
-                                      $_SESSION['user_role']=$row['role'];
-                                      $_SESSION['password']=$_POST['password'];
-                                      header("Location:{$hostname}/admin/post.php");
-                                  }
+                          //  while($row=mysqli_fetch_array($result,MYSQLI_BOTH)){
+                              $_SESSION['username']=$result[0]['username'];
+                              $_SESSION['user_id']=$result[0]['user_id'];
+                              $_SESSION['user_role']=$result[0]['role'];
+                              $_SESSION['password']=$_POST['password'];
+                              header("Location:{$hostname}/admin/post.php");
+
+                        //  }
+                                //  $row=mysqli_fetch_assoc($result);
+                                //  print_r($row);
+
                               //  }
                                 }
                                 else{

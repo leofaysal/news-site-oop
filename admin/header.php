@@ -1,15 +1,15 @@
 <?php
-include 'config.php';
+session_start();
+include_once 'config.php';
+include_once 'database.php';
+     if(!isset($_SESSION))
+     {
+        session_start();
+    }
 
-//     if(!isset($_SESSION))
-//     {
-//         session_start();
-//     }
-//
-//
-// if(!isset($_SESSION["username"])){
-//   header("Location:{$hostname}/admin/");
-// }
+if(!isset($_SESSION["username"])){
+  header("Location:{$hostname}/admin/");
+}
 ?>
 
 <!DOCTYPE html>
@@ -59,7 +59,7 @@ include 'config.php';
                     <div class="col-md-12">
                        <ul class="admin-menu">
                             <li>
-                                <a href="post.php">Post</a>
+                                <a href="post.php?page=1">Post</a>
                             </li>
                             <?php
                             if($_SESSION["user_role"]==0){

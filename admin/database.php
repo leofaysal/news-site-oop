@@ -49,7 +49,7 @@ class Database{
             $start=($page-1)*$limit;
             $sql .=" LIMIT $start, $limit";
           }
-        //  echo $sql;
+      //  echo $sql;
           $query=$this->conn->query($sql);
           if($query){
             $this->resultArr=$query->fetch_all(MYSQLI_ASSOC);
@@ -63,16 +63,16 @@ class Database{
         }
 
    }
-   // public function sql($sql){
-   //   $query=$this->conn->query($sql);
-   //   if($query){
-   //     $this->resultArr=$query->fetch_all(MYSQL_ASSOC);
-   //     return true;
-   //   }else{
-   //     array_push($this->resultArr,$this->conn->error);
-   //     return false;
-   //   }
-   // }
+   public function sql($sql){
+     $query=$this->conn->query($sql);
+     if($query){
+       $this->resultArr=$query->fetch_all(MYSQL_ASSOC);
+       return true;
+     }else{
+       array_push($this->resultArr,$this->conn->error);
+       return false;
+     }
+   }
    //Function for Inserting data into database
    public function insertData($table,$data=array()){
      //check if the enter table exists in database;
@@ -146,12 +146,14 @@ class Database{
         if($limit!=null){
           $sql="SELECT COUNT(*) FROM $table";
           if($join!=null){
-            $sql .="join $join";
+            $sql .=" JOIN $join";
           }
           if($where!=null){
-            $sql .="WHERE $where";
+            $sql .=" WHERE $where";
           }
+
           $query=$this->conn->query($sql);//count the total number of records
+
           $total_record=$query->fetch_array();
           $total_record=  $total_record[0];//will store the total number of record
           $total_pages=ceil($total_record/$limit);//calculate the pages

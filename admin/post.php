@@ -1,6 +1,5 @@
 <?php include "header.php"; ?>
 
-
   <div id="admin-content">
       <div class="container">
           <div class="row">
@@ -24,10 +23,26 @@
                       </thead>
                       <tbody>
                           <?php
-                          $serial=$offset+1;
-                           while($row=mysqli_fetch_assoc($result)) { ?>
+                          include_once 'config.php';
+                          include_once 'database.php';
+
+                          $limit=3;
+                          $db=new Database();
+                         if ($_SESSION['user_role']=="1"){
+                           $db->selectData('post','post.post_id,post.title,category.category_name,post.post_date,user.username','category ON post.category=category.category_id
+                           LEFT JOIN user ON post.author=user.user_id',null,'post.post_id',3);
+                         }elseif ($_SESSION['user_role']=="0"){
+                           $db->selectData('post','post.post_id,post.title,category.category_name,post.post_date,user.username','category ON post.category=category.category_id
+                           LEFT JOIN user ON post.author=user.user_id',"post.author={$_SESSION['user_id']}",'post.post_id',3);
+                         }
+
+
+                          $result=$db->getResult();
+                        //  print_r($result);
+                          foreach($result as $row) { ?>
                           <tr>
-                              <td class='id'><?php echo $serial;?></td>
+
+                            <td class='id'><?php echo $row['post_id'];?></td>
                               <td><?php echo $row['title'];?></td>
                               <td><?php echo $row['category_name'];?></td>
                               <td><?php echo $row['post_date'];?></td>
@@ -43,14 +58,21 @@
                               window.location.href="delete-post.php?id="+postid;
                               return true;
                             }
+
                           }
                           </script>
                           </tr>
-
+                          <?php
+                                      }?>
                       </tbody>
                   </table>
-                <?php
-                            }?>
+                  <?php
+                 if ($_SESSION['user_role']=="1"){
+                  echo $db->pagination('post','category ON post.category=category.category_id LEFT JOIN user ON post.author=user.user_id',null,$limit);
+                }
+                else if ($_SESSION['user_role']=="0"){
+                    echo $db->pagination('post','category ON post.category=category.category_id LEFT JOIN user ON post.author=user.user_id',"post.author={$_SESSION['user_id']}",$limit);
+                }?>
               </div>
           </div>
       </div>
