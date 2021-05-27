@@ -168,7 +168,7 @@ class Database{
             if($page>1){
               $output.="<li><a href='$url?page=".($page-1)."'>Prev</a></li>";
             }
-          if($total_record>$limit){
+        //  if($total_record>$limit){
 
             for($i=1;$i<=$total_pages;$i++){ //to show pages tabs
               if($i==$page){
@@ -178,7 +178,7 @@ class Database{
               }
               $output.="<li><a $cls href='$url?page=$i'>$i</a></li>";
             }
-          }
+        //  }
           if($total_pages>$page){
             $output.="<li><a href='$url?page=".($page+1)."'>Next</a></li>";
           }
