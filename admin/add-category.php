@@ -1,4 +1,7 @@
 <?php include "header.php";
+ include "classes.php";
+
+
  ?>
   <div id="admin-content">
       <div class="container">
@@ -16,7 +19,15 @@
                       <input type="submit" name="save" class="btn btn-primary" value="Save" required />
                   </form>
                   <!-- /Form End -->
-              
+                  <?php
+                  if (isset($_POST['save'])){
+                  //  session_start();
+                    $cat= new categories();
+                    $cat->create_category($_POST);
+                  } else {
+                    echo "This is the else part";
+                  }
+                  ?>
               </div>
           </div>
       </div>

@@ -1,6 +1,17 @@
 <?php include "header.php";
 if($_SESSION["user_role"]=='0'){
   header("Location:{$hostname}/admin/post.php");
+} else {
+  if($_SESSION["user_role"]=='1'){
+    if(isset($_POST['submit'])){
+      $cat= new categories();
+      $cat-> update_category($_POST);
+    }else{
+      echo "This is the else part";
+    }
+  }
+
+
 }
 
  ?>

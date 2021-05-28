@@ -41,23 +41,23 @@ class Post{
     }
    public function sql_query($sql){
 
-      $this->res= mysqli_query($this->mysqli_conn,$sql);
-      //  print_r($res);
+      $res= mysqli_query($this->mysqli_conn,$sql);
+       print_r($res);
      return $res;
 
 
     }
     public function showCategory(){
       $sql="SELECT * FROM category";
-      $cat=$mysqli_conn->sql_query($sql);
+      $cat=sql_query($sql);
     //  print_r($cat);
       if(mysqli_num_rows($cat)>0){
         whlie ($row=mysqli_fetch_assoc($cat)){
-          echo "<option value=".$row['category_id'].">".$row['category_name'] ."</option>";
+          echo "<option value='".$row['category_id']."'>".$row['category_name'] ."</option>";
         }
 
       }
-
+      return $result;
     }
 }
 //print_r ($_POST);
@@ -89,7 +89,8 @@ $db= new Post();
                               <option disabled> Select Category</option>
                               <?php
                               $db= new Post;
-                              $db->showCategory();
+                              $category =$db->showCategory();
+                              echo $category;
                               ?>
                           </select>
                       </div>

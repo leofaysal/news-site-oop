@@ -1,6 +1,9 @@
 <?php include "header.php";
-
-
+  include 'config.php';
+    include 'classes.php';
+if($_SESSION["user_role"]=='0'){
+  header("Location:{$hostname}/admin/post.php");
+}
  ?>
 <div id="admin-content">
     <div class="container">
@@ -12,6 +15,26 @@
                 <a class="add-new" href="add-category.php">add category</a>
             </div>
             <div class="col-md-12">
+              <?php
+              include "config.php";
+                $limit= 3;
+                if(isset($_GET['page']))
+                {
+                  $page=$_GET['page'];
+                }else
+                {
+                  $page=1;
+                }
+
+              $offset=($page-1) * $limit;
+              // select query with offset and limit
+
+                $sql="SELECT * FROM category
+                ORDER BY category_id LIMIT {$offset},$limit ";
+
+              $result=mysqli_query($conn,$sql) or die("Query Failed.");
+              if(mysqli_num_rows($result) > 0){
+              ?>
 
             <table class="content-table">
 
@@ -23,7 +46,11 @@
                         <th>Delete</th>
                     </thead>
                     <tbody>
-
+                      <?php
+                       $serial = $offset + 1 ;
+                        while($row=mysqli_fetch_assoc($result))
+                         {
+                           ?>
                         <tr>
                             <td class='id'><?php echo $serial;?></td>
                             <td><?php echo $row['category_name'];?></td>
@@ -42,10 +69,49 @@
                         }
                         </script>
                         </tr>
-
+                        <?php
+                         $serial++;
+                       }
+                       ?>
                     </tbody>
                 </table>
-              
+                <?php
+                            }
+                              // select pagination count() query
+                                $sql1="SELECT category_id FROM category";
+                                $result1=mysqli_query($conn,$sql1) or die("Query Failed");
+                                if(mysqli_num_rows($result1)>0){
+
+                                  $total_records=mysqli_num_rows($result1);
+
+                                  $total_pages= ceil($total_records/$limit);
+                                  echo "<ul class='pagination admin-pagination'>";
+                                    if($page>1)
+                                    {
+                                        echo "<li><a href='category.php?page=".($page-1)."'>Prev</a></li>";
+                                    }
+
+                                      for($i=1;$i<=$total_pages;$i++)
+                                      {
+                                            if($i == $page)
+                                            {
+                                              $active="btn-primary active";
+                                            }
+                                            else
+                                            {
+                                                $active = "btn-primary";
+                                            }
+                                            echo "<li class='". $active ."'><a href='category.php?page=". $i ."'> " . $i . "</a></li>";
+                                      }
+                                    if($total_pages>$page)
+                                    {
+                                        echo "<li><a href='category.php?page=".($page+1)."'>Next</a></li>";
+                                    }
+                                  }
+                                  echo "</ul>";
+
+                              ?>
+
 
             </div>
         </div>
