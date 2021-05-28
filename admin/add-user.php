@@ -1,5 +1,7 @@
 <?php include "header.php";
-
+if($_SESSION["user_role"]=='0'){
+  header("Location:{$hostname}/admin/post.php");
+}
  ?>
   <div id="admin-content">
       <div class="container">
@@ -37,6 +39,14 @@
                       <input type="submit"  name="save" class="btn btn-primary" value="Save" required />
                   </form>
                    <!-- Form End-->
+                   <?php
+                   include "classes.php";
+                   if(isset($_POST['save'])){
+                     $user=new user();
+                     $user->insert($_POST);
+                   }
+
+                   ?>
                </div>
            </div>
        </div>

@@ -24,8 +24,6 @@
                   //  session_start();
                     $cat= new categories();
                     $cat->create_category($_POST);
-                  } else {
-                    echo "This is the else part";
                   }
                   ?>
               </div>

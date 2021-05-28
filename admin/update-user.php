@@ -1,4 +1,5 @@
 <?php include "header.php";
+include "classes.php";
 if($_SESSION["user_role"]=='0'){
   include "config.php";
 
@@ -13,45 +14,48 @@ if($_SESSION["user_role"]=='0'){
 }
 
 if(isset($_POST['submit'])){
-  include "config.php";
-$userid=mysqli_real_escape_string($conn,$_POST['user_id']);
-$fname=mysqli_real_escape_string($conn,$_POST['f_name']);
-$lname=mysqli_real_escape_string($conn,$_POST['l_name']);
-$user=mysqli_real_escape_string($conn,$_POST['username']);
-//$password=mysqli_real_escape_string($conn,md5($_POST['password']));
-if(isset($_POST['old-password'])&& $_POST['new-password']){
-  $old_password=mysqli_real_escape_string($conn,md5($_POST['old-password']));
-  $new_password=mysqli_real_escape_string($conn,md5($_POST['new-password']));
-}else{
-  $old_password="";
-  $new_password="";
-}
-$error_username="";
-$role=mysqli_real_escape_string($conn,$_POST['role']);
-$sql1="SELECT username FROM user WHERE username='{$user}' AND user_id !='$userid'";
-$result1=mysqli_query($conn,$sql1) or die("Query Failed :select");
+  $user=new user();
+  $user->update_user($_POST);
+//   include "config.php";
+// $userid=mysqli_real_escape_string($conn,$_POST['user_id']);
+// $fname=mysqli_real_escape_string($conn,$_POST['f_name']);
+// $lname=mysqli_real_escape_string($conn,$_POST['l_name']);
+// $user=mysqli_real_escape_string($conn,$_POST['username']);
+// //$password=mysqli_real_escape_string($conn,md5($_POST['password']));
+// if(isset($_POST['old-password'])&& $_POST['new-password']){
+//   $old_password=mysqli_real_escape_string($conn,md5($_POST['old-password']));
+//   $new_password=mysqli_real_escape_string($conn,md5($_POST['new-password']));
+// }else{
+//   $old_password="";
+//   $new_password="";
+// }
+// $error_username="";
+// $role=mysqli_real_escape_string($conn,$_POST['role']);
+// $sql1="SELECT username FROM user WHERE username='{$user}' AND user_id !='$userid'";
+// $result1=mysqli_query($conn,$sql1) or die("Query Failed :select");
+//
+// if(mysqli_num_rows($result1)){
+//     // if input value exists
+// $error_username="Username already exists , choose another username";
+//
+// }else{
+//   if(empty($old_password || $new_password)){
+//    $sql1="UPDATE user SET first_name='{$fname}',last_name='{$lname}',username='{$user}',role='{$role}' WHERE user_id={$userid}";
+//         }
+//       else{
+//        $sql1="UPDATE user SET first_name='{$fname}',last_name='{$lname}',username='{$user}', role='{$role}' ,password='{$new_password}' WHERE user_id={$userid} and password='{$old_password}'";
+//
+//          }
+//
+//   if(mysqli_query($conn,$sql1)){
+//     header("Location:{$hostname}/admin/users.php");
+//   }
+//   else {
+//     echo "Query Failed:update";
+//   }
+//  }
 
-if(mysqli_num_rows($result1)){
-    // if input value exists
-$error_username="Username already exists , choose another username";
-
-}else{
-  if(empty($old_password || $new_password)){
-   $sql1="UPDATE user SET first_name='{$fname}',last_name='{$lname}',username='{$user}',role='{$role}' WHERE user_id={$userid}";
-        }
-      else{
-       $sql1="UPDATE user SET first_name='{$fname}',last_name='{$lname}',username='{$user}', role='{$role}' ,password='{$new_password}' WHERE user_id={$userid} and password='{$old_password}'";
-
-         }
-
-  if(mysqli_query($conn,$sql1)){
-    header("Location:{$hostname}/admin/users.php");
-  }
-  else {
-    echo "Query Failed:update";
-  }
  }
-}
 
 ?>
   <div id="admin-content">

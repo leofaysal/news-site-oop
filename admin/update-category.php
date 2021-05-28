@@ -1,19 +1,8 @@
 <?php include "header.php";
+  include "classes.php";
 if($_SESSION["user_role"]=='0'){
   header("Location:{$hostname}/admin/post.php");
-} else {
-  if($_SESSION["user_role"]=='1'){
-    if(isset($_POST['submit'])){
-      $cat= new categories();
-      $cat-> update_category($_POST);
-    }else{
-      echo "This is the else part";
-    }
-  }
-
-
 }
-
  ?>
   <div id="admin-content">
       <div class="container">
@@ -45,27 +34,10 @@ if($_SESSION["user_role"]=='0'){
                   </form>
                 <?php
                }
+
                if(isset($_POST['submit'])){
-                 //query for update category exist
-                 $sql1="SELECT category_name FROM category WHERE category_name='{$_POST['cat_name']}'";
-
-                 $result1=mysqli_query($conn,$sql1);
-                 if(mysqli_num_rows($result1)){
-                     // if input value exists
-                   $error_categoryname="Category name already exist";
-                   echo "<p class='alert alert-danger'>" .$error_categoryname. "<a href='#'class='close' data-dismiss='alert' aria-label='close'>&times;</a> </p>";
-
-                 }else{
-                   $sql1 = "UPDATE category SET category_id='{$_POST['cat_id']}',category_name='{$_POST['cat_name']}' WHERE  category_id={$_POST['cat_id']}";
-
-
-
-                 if(mysqli_multi_query($conn,$sql1)){
-                   // redirect to category page
-                   header("location: {$hostname}/admin/category.php");
-                   }
-                 }
-
+                 $cat= new categories();
+                 $cat-> update_category($_POST);
                }
                  ?>
                 </div>
