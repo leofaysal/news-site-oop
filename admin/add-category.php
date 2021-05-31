@@ -1,7 +1,6 @@
 <?php include "header.php";
  include "classes.php";
 
-
  ?>
   <div id="admin-content">
       <div class="container">

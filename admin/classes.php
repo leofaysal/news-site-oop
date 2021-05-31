@@ -91,6 +91,38 @@ class db_connect // database connection class
     $row = mysqli_num_rows($res);
     return $row;
   }
+   function pagination($table,$limit,$url){
+    $sql="SELECT COUNT(*) FROM $table";
+    $res= $this->run_query($sql);
+    $total_records =$this->rows_num($res);
+    $total_pages=ceil($total_records/$limit);
+    if(isset($_GET['page'])){
+      $page=$_GET['page'];
+    }else{
+      $page=1;
+    }
+      $output="<ul class='pagination'>";
+      if($page>1){
+        $output.="<li><a href='$url?page=".($page-1)."'>Prev</a></li>";
+      }
+  //  if($total_record>$limit){
+
+      for($i=1;$i<=$total_pages;$i++){ //to show pages tabs
+        if($i==$page){
+          $cls="class='active'";
+        }else{
+          $cls="";
+        }
+        $output.="<li><a $cls href='$url?page=$i'>$i</a></li>";
+      }
+  //  }
+    if($total_pages>$page){
+      $output.="<li><a href='$url?page=".($page+1)."'>Next</a></li>";
+    }
+      $output.="</ul>";
+      echo $output;
+
+}
 
 }
 //  $db = new db_connect();
@@ -141,7 +173,6 @@ else{
     $sql= "INSERT INTO user (first_name , last_name , username , password , role ) VALUES ('$fname' , '$lname' , '$username' , '$pass' , '$role')";
 
     if($try->run_query($sql)){
-
     header("Location:http://localhost/news-site-oops/admin/users.php");
       }
     }
@@ -243,11 +274,6 @@ else{
 
 
 
-
-
-
-
-
 class posts extends db_connect // class of posts table
 {
 
@@ -269,6 +295,35 @@ function set_post($title , $description , $category , $post_date , $author , $po
     $this->author = $author;
     $this->$post_img = $post_img;
 
+}
+public static function showPosts($session){
+  global $db;
+  $try = new db_connect();
+  $limit=3;
+//  if($limit!=null){
+    if(isset($_GET['page'])){
+        $page=$_GET['page'];
+    }else{
+      $page=1;
+    }
+    $start=($page-1)*$limit;
+
+
+
+  if($session['user_role']=="1"){
+  $sql= "SELECT post.post_id,post.title,post.post_date,category.category_name,user.username FROM post
+        LEFT JOIN category ON post.category=category.category_id
+        LEFT JOIN user ON post.author=user.user_id
+        ORDER BY post.post_id LIMIT $start $limit";
+}elseif ($session['user_role']=="0"){
+  $sql= "SELECT post.post_id,post.title,post.post_date,category.category_name,user.username FROM post
+        LEFT JOIN category ON post.category=category.category_id
+        LEFT JOIN user ON post.author=user.username
+        WHERE post.author={$session['user_id']};
+        ORDER BY post.post_id LIMIT $start $limit";
+ }
+   $res = $try->run_query($sql);
+   return $res;
 }
 function insert_post($post , $auth_id , $img) // use to insert data into the post table of database
 {

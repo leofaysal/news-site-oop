@@ -24,20 +24,12 @@
                       <tbody>
                           <?php
                           include_once 'config.php';
-                          include_once 'database.php';
+                          include_once 'classes.php';
 
-                          $limit=3;
-                          $db=new Database();
-                         if ($_SESSION['user_role']=="1"){
-                           $db->selectData('post','post.post_id,post.title,category.category_name,post.post_date,user.username','category ON post.category=category.category_id
-                           LEFT JOIN user ON post.author=user.user_id',null,'post.post_id',3);
-                         }elseif ($_SESSION['user_role']=="0"){
-                           $db->selectData('post','post.post_id,post.title,category.category_name,post.post_date,user.username','category ON post.category=category.category_id
-                           LEFT JOIN user ON post.author=user.user_id',"post.author={$_SESSION['user_id']}",'post.post_id',3);
-                         }
+                        //  $limit=3;
+                          $post=new posts();
 
-
-                          $result=$db->getResult();
+                          $result=$post->showPosts($_SESSION);
                         //  print_r($result);
                           foreach($result as $row) { ?>
                           <tr>
@@ -67,12 +59,11 @@
                       </tbody>
                   </table>
                   <?php
-                 if ($_SESSION['user_role']=="1"){
-                  echo $db->pagination('post','category ON post.category=category.category_id LEFT JOIN user ON post.author=user.user_id',null,$limit);
-                }
-                else if ($_SESSION['user_role']=="0"){
-                    echo $db->pagination('post','category ON post.category=category.category_id LEFT JOIN user ON post.author=user.user_id',"post.author={$_SESSION['user_id']}",$limit);
-                }?>
+                    $url=basename($_SERVER['PHP_SELF']);
+                      $db=new db_connect();
+
+                      $db->pagination('post',3,$url);
+                ?>
               </div>
           </div>
       </div>

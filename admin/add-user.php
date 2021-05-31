@@ -1,4 +1,6 @@
-<?php include "header.php";
+<?php
+ob_start();
+include "header.php";
 if($_SESSION["user_role"]=='0'){
   header("Location:{$hostname}/admin/post.php");
 }
@@ -45,10 +47,11 @@ if($_SESSION["user_role"]=='0'){
                      $user=new user();
                      $user->insert($_POST);
                    }
-
                    ?>
                </div>
            </div>
        </div>
    </div>
-<?php include "footer.php"; ?>
+<?php include "footer.php";
+ob_end_flush();
+ ?>
