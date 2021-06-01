@@ -93,8 +93,11 @@ class db_connect // database connection class
   }
    function pagination($table,$limit,$url){
     $sql="SELECT COUNT(*) FROM $table";
+
     $res= $this->run_query($sql);
-    $total_records =$this->rows_num($res);
+     $result=mysqli_fetch_array($res);
+     $total_records=$result[0];
+
     $total_pages=ceil($total_records/$limit);
     if(isset($_GET['page'])){
       $page=$_GET['page'];
@@ -181,16 +184,19 @@ else{
     {
 
         global $db;
-        $sql = "SELECT * FROM user";
-        $res = mysqli_query($db->conn , $sql) or die("Query Failed");;
-        if($try->rows_num($res)>0)
-        {
-            while($rows = mysqli_fetch_assoc($res))
-            {
-                $array[] = $rows;
-            }
-            print_r($array);
+        $try = new db_connect();
+        $limit=3;
+        if(isset($_GET['page'])){
+          $page=$_GET['page'];
+        } else{
+          $page=1;
         }
+        $start=($page-1)*$limit;
+        $sql = "SELECT * FROM user
+        LIMIT $start, $limit";
+        $res =  $try->run_query($sql) or die("Query Failed");;
+
+        return $res;
 
     }
 
@@ -314,16 +320,27 @@ public static function showPosts($session){
   $sql= "SELECT post.post_id,post.title,post.post_date,category.category_name,user.username FROM post
         LEFT JOIN category ON post.category=category.category_id
         LEFT JOIN user ON post.author=user.user_id
-        ORDER BY post.post_id LIMIT $start $limit";
+        ORDER BY post.post_id LIMIT $start, $limit";
 }elseif ($session['user_role']=="0"){
   $sql= "SELECT post.post_id,post.title,post.post_date,category.category_name,user.username FROM post
         LEFT JOIN category ON post.category=category.category_id
         LEFT JOIN user ON post.author=user.username
         WHERE post.author={$session['user_id']};
-        ORDER BY post.post_id LIMIT $start $limit";
+        ORDER BY post.post_id LIMIT $start, $limit";
  }
+ //echo $sql;
    $res = $try->run_query($sql);
-   return $res;
+   if($try->rows_num($res)>0)
+   {
+       while($rows = mysqli_fetch_assoc($res))
+       {
+           $array[] = $rows;
+       }
+       return $array;
+   }
+
+  // print_r($res);
+  // return $res;
 }
 function insert_post($post , $auth_id , $img) // use to insert data into the post table of database
 {
@@ -454,7 +471,25 @@ class categories extends db_connect // class of category table
   public $category;
   public $post;
 
+  function showCategory()
+  {
 
+      global $db;
+      $try = new db_connect();
+      $limit=3;
+      if(isset($_GET['page'])){
+        $page=$_GET['page'];
+      } else{
+        $page=1;
+      }
+      $start=($page-1)*$limit;
+      $sql = "SELECT * FROM category
+      LIMIT $start, $limit";
+      $res =  $try->run_query($sql) or die("Query Failed");;
+
+      return $res;
+
+  }
   function create_category($post)// use to create category
   {
     global $db;

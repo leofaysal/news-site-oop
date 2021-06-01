@@ -151,7 +151,7 @@ class Database{
           if($where!=null){
             $sql .=" WHERE $where";
           }
-
+ echo $sql;
           $query=$this->conn->query($sql);//count the total number of records
 
           $total_record=$query->fetch_array();
