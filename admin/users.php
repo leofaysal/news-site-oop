@@ -1,5 +1,6 @@
 <?php include "header.php";
-
+include "config.php";
+include "classes.php";
 ?>
 
 
@@ -25,12 +26,11 @@
                       </thead>
                       <tbody>
                         <?php
-                        include "config.php";
-                        include "classes.php";
+
                          //  $serial=$offset+1;
                          // while($row=mysqli_fetch_assoc($result)) {
                          $user=new user();
-                         $res=$user->get_data();
+                         $res=$user->find_all_users();
                          foreach($res as $row){
                           ?>
                           <tr>
@@ -45,18 +45,17 @@
                                 }
                                ?></td>
                               <td class='edit'><a href='update-user.php?id=<?php echo $row["user_id"]; ?>'><i class='fa fa-edit'></i></a></td>
-                              <td class='delete'><a onClick="deleteConfirm(<?php echo $row['user_id']; ?>)"><i class='fa fa-trash-o'></i></a></td>
-
+                              <td class="delete"><a class="text-danger" onClick="return confirm('Are you sure you want to delete this user ?')" href="delete-user.php?id=<?php echo $row['user_id'];?>"><i class='fa fa-trash-o'></i></a></td>
                           </tr>
                           <!-- Javascript Fuction for deleting data -->
-                          <script language="javascript">
+                          <!-- <script language="javascript">
                           function deleteConfirm(userid){
                             if(confirm("Are you sure you want to delete this?")){
                               window.location.href="delete-user.php?id="+userid;
                               return true;
                             }
                           }
-                          </script>
+                          </script> -->
                         <?php }?>
                       </tbody>
                       <?php if(isset($error_msg)){?>
@@ -68,9 +67,9 @@
 
                   $db=new db_connect();
                     $url=basename($_SERVER['PHP_SELF']);
-                  $db->pagination('user',3,$url);
+                  $db->pagination('user',$url);
                   ?>
-                
+
               </div>
           </div>
       </div>

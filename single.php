@@ -1,11 +1,18 @@
-<?php include 'header.php'; ?>
+<?php include 'header.php';
+include 'config.php';
+//include 'admin/classes.php';
+$type='single';
+$post= new posts();
+$result=$post->showPosts($type);
+ ?>
+
     <div id="main-content">
         <div class="container">
             <div class="row">
                 <div class="col-md-8">
                   <!-- post-container -->
                     <div class="post-container">
-
+                        <?php  foreach($result as $row){ ?>
                         <div class="post-content single-post">
                             <h3><?php echo $row['title'];?></h3>
                             <div class="post-information">
@@ -30,9 +37,7 @@
                         </div>
                         <?php
                             }
-                          }else {
-                            echo "<h2>No Record Found</h2>";
-                          }
+
                           ?>
                     </div>
 

@@ -60,7 +60,7 @@ if($_SESSION["user_role"]=='0'){
 
                               $db=new db_connect();
                                 $url=basename($_SERVER['PHP_SELF']);
-                              $db->pagination('category',3,$url);
+                              $db->pagination('category',$url);
                               ?>
             </div>
         </div>

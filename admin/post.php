@@ -1,4 +1,9 @@
-<?php include "header.php"; ?>
+<?php include "header.php";
+  require_once "classes.php";
+  if(!session_id()){
+    session_start();
+  }
+ ?>
 
   <div id="admin-content">
       <div class="container">
@@ -12,6 +17,13 @@
               <div class="col-md-12">
 
                   <table class="content-table">
+                    <?php
+
+                    $post=new posts();
+
+                    $result=$post->showPosts();
+                  //  print_r($result);
+                 ?>
                       <thead>
                           <th>S.No.</th>
                           <th>Title</th>
@@ -22,15 +34,8 @@
                           <th>Delete</th>
                       </thead>
                       <tbody>
-                          <?php
-                          include_once 'config.php';
-                          include_once 'classes.php';
-
-                        //  $limit=3;
-                          $post=new posts();
-
-                          $result=$post->showPosts($_SESSION);
-                        //  print_r($result);
+                        <?php
+                        if(!empty($result)){
                           foreach($result as $row) { ?>
                           <tr>
 
@@ -40,11 +45,11 @@
                               <td><?php echo $row['post_date'];?></td>
                               <td><?php echo $row['username'];?></td>
                               <td class='edit'><a href='update-post.php?id=<?php echo $row["post_id"];?>'><i class='fa fa-edit'></i></a></td>
-                              <td class='delete'><a onClick="deleteConfirm(<?php echo $row['post_id']; ?>)"><i class='fa fa-trash-o'></i></a></td>
-
+                              <!-- <td class='delete'><a onClick="deleteConfirm(<?php //echo $row['post_id']; ?>)"><i class='fa fa-trash-o'></i></a></td> -->
+                              <td class="delete"><a class="text-danger" onClick="return confirm('Are you sure you want to this post delete?')" href="delete-post.php?id=<?php echo $row['post_id'];?>&cid=<?php echo $row['category_id']; ?>"><i class='fa fa-trash-o'></i></a></td>
 
                           <!-- Javascript Fuction for deleting data -->
-                          <script language="javascript">
+                          <!-- <script language="javascript">
                           function deleteConfirm(postid){
                             if(confirm("Are you sure you want to delete this?")){
                               window.location.href="delete-post.php?id="+postid;
@@ -52,17 +57,21 @@
                             }
 
                           }
-                          </script>
+                          </script> -->
                           </tr>
                           <?php
                                       }?>
                       </tbody>
                   </table>
-                  <?php
-                    $url=basename($_SERVER['PHP_SELF']);
-                      $db=new db_connect();
+                   <?php
 
-                      $db->pagination('post',3,$url);
+                   $url=basename($_SERVER['PHP_SELF']);
+                     $db=new db_connect();
+//$where = '';
+                     $db->pagination('post',$url);
+                   }else{
+                    echo "<h2> Currently No Posts To Show</h2>";
+                  }
                 ?>
               </div>
           </div>

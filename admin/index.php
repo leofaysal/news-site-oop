@@ -1,9 +1,36 @@
 <?php
-include_once 'config.php';
- session_start();
-if(isset($_SESSION["username"])){
-  header("Location:{$hostname}/admin/post.php");
- }
+
+require_once ('classes.php');
+if(!session_id()){
+  session_start();
+}
+  $session=new Session();
+
+  // if(!$session->is_signed_in){
+  //   header("Location:http://localhost/news-site-oops/admin/");
+  // }
+if(isset($_POST['login'])){
+  $username=trim($_POST['username']);
+  $password=trim(md5($_POST['password']));
+  $user= new user();
+  $user_record=$user->verify_user($username,$password);
+  //print_r($user_record);
+  //die();
+  //$user_found=array_shift($user_record);
+  if($user_record){
+
+    $session->login($user_record);
+    //echo $session->username;
+  header("Location:http://localhost/news-site-oops/admin/post.php");
+  }else{
+    $error_message="Username or Password incorrect";
+  }
+}
+else{
+    $username="";
+    $password="";
+  }
+
 ?>
 
 <!doctype html>
@@ -39,46 +66,7 @@ if(isset($_SESSION["username"])){
                            <input type="submit" class="btn btn-primary" name="signup" value="Sign Up">
                         </form>
                         <!-- /Form  End -->
-                      <?php
-                      include_once 'database.php';
-                    //  include_once 'config.php';
-                      $db=new Database();
-                      if(isset($_POST['login'])){
-                            // if(empty($_POST['username']) || empty($_POST['password'])){
-                            //    echo '<div class="alert alert-danger">Please fill in all the fields</div>';
-                            //  }else{
-                               $username=$db->escapeString($_POST['username']);
-                               $password=md5($db->escapeString($_POST['password']));
-                               echo $username. "<br>". $password;
-                               $db->selectData('user','user_id,username,role',null,"username='$username'AND password='$password'",null,null);
-                                $result=$db->getResult();
-                              //  var_dump($result);
-                            //   print_r($result);
-                                if(!empty($result)){
-                                //  session_start();
-                                  //set session variables
-                          //        if(mysqli_num_rows($result)>0){
-                          //  while($row=mysqli_fetch_array($result,MYSQLI_BOTH)){
-                              $_SESSION['username']=$result[0]['username'];
-                              $_SESSION['user_id']=$result[0]['user_id'];
-                              $_SESSION['user_role']=$result[0]['role'];
-                              $_SESSION['password']=$_POST['password'];
-                              header("Location:{$hostname}/admin/post.php");
 
-                        //  }
-                                //  $row=mysqli_fetch_assoc($result);
-                                //  print_r($row);
-
-                              //  }
-                                }
-                                else{
-                                  echo '<div class="alert alert-danger">Username or Password incorrect</div>';
-                                }
-                         }
-
-
-
-                    ?>
                     </div>
                 </div>
             </div>

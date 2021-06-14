@@ -1,16 +1,19 @@
-<?php
-session_start();
-include_once 'config.php';
-include_once 'database.php';
-//include "classes.php";
-     if(!isset($_SESSION))
-     {
-        session_start();
-    }
-if(!isset($_SESSION["username"])){
-  header("Location:{$hostname}/admin/");
+<?php ob_start();
+//include "config.php";
+require_once "classes.php";
+if(!session_id()){
+  session_start();
 }
+$session= new Session();
+
+echo $session->username;
+
+
+
+
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -45,7 +48,7 @@ if(!isset($_SESSION["username"])){
                     <!-- /LOGO -->
                       <!-- LOGO-Out -->
                     <div class="col-md-offset-9  col-md-3">
-                        <a href="logout.php" class="admin-logout" >Hello <?php echo $_SESSION["username"]?> , logout</a>
+                        <a href="logout.php" class="admin-logout" >Hello <?php echo $session->username ;?> , logout</a>
                     </div>
                     <!-- /LOGO-Out -->
                 </div>
@@ -62,17 +65,18 @@ if(!isset($_SESSION["username"])){
                                 <a href="post.php?page=1">Post</a>
                             </li>
                             <?php
-                            if($_SESSION["user_role"]==0){
+                            if($session->user_role==0){
 
-                            ?>
+                           ?>
+
                             <li>
                                 <a href="myprofile.php">My Account</a>
                               </li>
-                            <?php
-                            }
-                            if($_SESSION["user_role"]==1){
+                              <?php
+                           }
+                           if($session->user_role==1){
 
-                            ?>
+                           ?>
                             <li>
                                 <a href="users.php">Users</a>
                             </li>
@@ -84,7 +88,7 @@ if(!isset($_SESSION["username"])){
                                 <a href="settings.php">Setting</a>
                             </li>
                             <?php
-                             }
+                            }
                             ?>
                         </ul>
                     </div>

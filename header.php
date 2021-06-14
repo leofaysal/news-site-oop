@@ -2,6 +2,7 @@
 <?php
 // *** Make the title dynamic ***
 include "config.php";
+include "admin/classes.php";
 $page=basename($_SERVER['PHP_SELF']) ;
 switch($page){
   case "single.php":

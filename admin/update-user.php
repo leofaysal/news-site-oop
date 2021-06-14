@@ -15,47 +15,8 @@ if($_SESSION["user_role"]=='0'){
 
 if(isset($_POST['submit'])){
   $user=new user();
-  $user->update_user($_POST);
-//   include "config.php";
-// $userid=mysqli_real_escape_string($conn,$_POST['user_id']);
-// $fname=mysqli_real_escape_string($conn,$_POST['f_name']);
-// $lname=mysqli_real_escape_string($conn,$_POST['l_name']);
-// $user=mysqli_real_escape_string($conn,$_POST['username']);
-// //$password=mysqli_real_escape_string($conn,md5($_POST['password']));
-// if(isset($_POST['old-password'])&& $_POST['new-password']){
-//   $old_password=mysqli_real_escape_string($conn,md5($_POST['old-password']));
-//   $new_password=mysqli_real_escape_string($conn,md5($_POST['new-password']));
-// }else{
-//   $old_password="";
-//   $new_password="";
-// }
-// $error_username="";
-// $role=mysqli_real_escape_string($conn,$_POST['role']);
-// $sql1="SELECT username FROM user WHERE username='{$user}' AND user_id !='$userid'";
-// $result1=mysqli_query($conn,$sql1) or die("Query Failed :select");
-//
-// if(mysqli_num_rows($result1)){
-//     // if input value exists
-// $error_username="Username already exists , choose another username";
-//
-// }else{
-//   if(empty($old_password || $new_password)){
-//    $sql1="UPDATE user SET first_name='{$fname}',last_name='{$lname}',username='{$user}',role='{$role}' WHERE user_id={$userid}";
-//         }
-//       else{
-//        $sql1="UPDATE user SET first_name='{$fname}',last_name='{$lname}',username='{$user}', role='{$role}' ,password='{$new_password}' WHERE user_id={$userid} and password='{$old_password}'";
-//
-//          }
-//
-//   if(mysqli_query($conn,$sql1)){
-//     header("Location:{$hostname}/admin/users.php");
-//   }
-//   else {
-//     echo "Query Failed:update";
-//   }
-//  }
-
- }
+  $user->update_user();
+}
 
 ?>
   <div id="admin-content">
@@ -90,8 +51,8 @@ if(isset($_POST['submit'])){
                       <div class="form-group">
                           <label>User Name</label>
                           <input type="text" name="username" class="form-control" value="<?php echo isset($_POST['username'])? $_POST['username']: $row['username']; ?>" placeholder="" required>
-                            <?php  if(isset($error_username)){
-                              echo '<p class="error alert alert-danger">' . $error_username .' <a href="#"class="close" data-dismiss="alert" aria-label="close">&times;</a></p>';}
+                            <?php  if(isset($user->error)){
+                              echo '<p class="error alert alert-danger">' . $user->error .' <a href="#"class="close" data-dismiss="alert" aria-label="close">&times;</a></p>';}
                                ?>
                       </div>
                       <div class="form-group">

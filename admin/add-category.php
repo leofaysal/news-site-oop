@@ -22,7 +22,7 @@
                   if (isset($_POST['save'])){
                   //  session_start();
                     $cat= new categories();
-                    $cat->create_category($_POST);
+                    $cat->create_category();
                   }
                   ?>
               </div>

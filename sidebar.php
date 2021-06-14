@@ -17,16 +17,14 @@
         <h4>Recent Posts</h4>
         <?php
         include "config.php";
-        $limit= 5;
+      //  include "admin/classes.php";
+        $post=new posts();
+        $type = 'recent post';
+        $result=$post->showPosts($type);
+       
+        foreach($result as $row){
 
-        $sql="SELECT post.post_id,post.title,post.post_date,
-        category.category_name,post.category,post.post_img FROM post
-        LEFT JOIN category ON post.category=category.category_id
-        ORDER BY post.post_id DESC LIMIT $limit ";
-         $result=mysqli_query($conn,$sql) or die("Query Failed : Recent Post");
-         if(mysqli_num_rows($result) > 0){
-            while($row=mysqli_fetch_assoc($result)) {
-        ?>
+         ?>
         <div class="recent-post">
             <a class="post-img" href="single.php?id= <?php echo $row['post_id'];  ?>">
                 <img src=" admin/upload/<?php echo $row['post_img'];  ?>" alt=""/>
@@ -50,7 +48,7 @@
 
     <?php
        }
-      }
+
     ?>
     <!-- /recent posts box -->
 </div>

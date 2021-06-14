@@ -1,4 +1,7 @@
-<?php include 'header.php'; ?>
+<?php include 'header.php';
+//include 'admin/classes.php';
+$post= new posts();
+ ?>
     <div id="main-content">
         <div class="container">
             <div class="row">
@@ -6,24 +9,11 @@
                     <!-- post-container -->
                     <div class="post-container">
                       <?php
-                      include "config.php";
-                      $limit= 3;
-                      if(isset($_GET['page'])){
-                        $page=$_GET['page'];
-                      }else{
-                        $page=1;
-                      }
+                      $result=$post->showPosts();
+                    //  print_r($result);
+                      foreach($result as $row){
 
-                    $offset=($page-1) * $limit;
 
-                      $sql="SELECT post.post_id,post.title,post.description,post.post_date,post.author,
-                      category.category_name,user.username,post.category,post.post_img FROM post
-                      LEFT JOIN category ON post.category=category.category_id
-                      LEFT JOIN user ON post.author=user.user_id
-                       ORDER BY post.post_id  LIMIT {$offset},$limit ";
-                       $result=mysqli_query($conn,$sql) or die("Query Failed.");
-                       if(mysqli_num_rows($result) > 0){
-                          while($row=mysqli_fetch_assoc($result)) {
                       ?>
                         <div class="post-content">
                             <div class="row">
@@ -57,36 +47,7 @@
                         </div>
                         <?php
                             }
-                          }else {
-                            echo "<h2>No Record Found</h2>";
-                          }
 
-                        $sql1="SELECT * FROM post";
-                        $result1=mysqli_query($conn,$sql1) or die("Query Failed");
-
-                        if(mysqli_num_rows($result1)>0){
-                          $total_records=mysqli_num_rows($result1);
-
-                          $total_pages= ceil($total_records/$limit);
-                          echo "<ul class='pagination admin-pagination'>";
-                          if($page>1){
-                              echo "<li><a href='index.php?page=".($page-1)."'>Prev</a></li>";
-                          }
-
-                          for($i=1;$i<=$total_pages;$i++){
-                            if($i==$page){
-                              $active="active";
-                            }else{
-                                $active="";
-                            }
-                            echo "<li class='".$active ."'><a href='index.php?page=". $i ."'> " . $i . "</a></li>";
-                          }
-                          if($total_pages>$page){
-                              echo "<li><a href='index.php?page=".($page+1)."'>Next</a></li>";
-                          }
-
-                          echo "</ul>";
-                        }
                           ?>
                         <!-- <ul class='pagination'>
                             <li class="active"><a href="">1</a></li>
