@@ -1,8 +1,10 @@
-<?php include "header.php";
-  require_once "classes.php";
+<?php   //session_start();
+  include "header.php";
+
   if(!session_id()){
     session_start();
   }
+  $role= $session->user_role;
  ?>
 
   <div id="admin-content">
@@ -22,7 +24,7 @@
                     $post=new posts();
 
                     $result=$post->showPosts();
-                  //  print_r($result);
+
                  ?>
                       <thead>
                           <th>S.No.</th>
@@ -60,18 +62,14 @@
                           </script> -->
                           </tr>
                           <?php
-                                      }?>
+                        }
+                        }?>
                       </tbody>
                   </table>
                    <?php
 
-                   $url=basename($_SERVER['PHP_SELF']);
-                     $db=new db_connect();
-//$where = '';
-                     $db->pagination('post',$url);
-                   }else{
-                    echo "<h2> Currently No Posts To Show</h2>";
-                  }
+                     $db->pagination('post','',$role);
+
                 ?>
               </div>
           </div>

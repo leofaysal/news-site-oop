@@ -1,5 +1,5 @@
 <?php include "header.php";
-include "classes.php";
+
 if (isset($_POST['submit'])){
 $post= new posts();
 

@@ -10,9 +10,8 @@ $post= new posts();
                     <div class="post-container">
                       <?php
                       $result=$post->showPosts();
-                    //  print_r($result);
-                      foreach($result as $row){
 
+                      foreach($result as $row){
 
                       ?>
                         <div class="post-content">
@@ -47,13 +46,9 @@ $post= new posts();
                         </div>
                         <?php
                             }
-
+                           $db->pagination('post');
                           ?>
-                        <!-- <ul class='pagination'>
-                            <li class="active"><a href="">1</a></li>
-                            <li><a href="">2</a></li>
-                            <li><a href="">3</a></li>
-                        </ul> -->
+                      
                     </div><!-- /post-container -->
                 </div>
                 <?php include 'sidebar.php'; ?>

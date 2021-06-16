@@ -1,9 +1,9 @@
 <?php include "header.php";
-  include 'config.php';
-    include 'classes.php';
-if($_SESSION["user_role"]=='0'){
-  header("Location:{$hostname}/admin/post.php");
-}
+
+    //include 'classes.php';
+// if($_SESSION["user_role"]=='0'){
+//   header("Location:{$hostname}/admin/post.php");
+// }
  ?>
 <div id="admin-content">
     <div class="container">
@@ -28,7 +28,8 @@ if($_SESSION["user_role"]=='0'){
                     <tbody>
                       <?php
                       $category=new categories();
-                      $res=$category->showCategory();
+                      $type='backend';
+                      $res=$category->showCategory($type);
                       foreach($res as $row){
 
                            ?>
@@ -57,10 +58,8 @@ if($_SESSION["user_role"]=='0'){
                     </tbody>
                 </table>
                             <?php
-
-                              $db=new db_connect();
-                                $url=basename($_SERVER['PHP_SELF']);
-                              $db->pagination('category',$url);
+                             $para="category";
+                             $db->pagination('category',$para);
                               ?>
             </div>
         </div>

@@ -1,17 +1,20 @@
 <?php include "header.php";
 
-if($_SESSION["user_role"]=='0'){
-  include "config.php";
-
-  $post_id=$_GET['id'];
-  $sql2="SELECT author FROM post WHERE post_id={$post_id}";
-  $result2=mysqli_query($conn,$sql2) or die("Query Failed.");
-  $row2=mysqli_fetch_assoc($result2);
-
-   if($row2['author']!=$_SESSION["user_id"]){
-  header("location: {$hostname}/admin/post.php");
-   }
-}
+// if($_SESSION["user_role"]=='0'){
+//
+//
+//   $post_id=$_GET['id'];
+//   $sql2="SELECT author FROM post WHERE post_id={$post_id}";
+//   $result2=mysqli_query($conn,$sql2) or die("Query Failed.");
+//   $row2=mysqli_fetch_assoc($result2);
+//
+//    if($row2['author']!=$_SESSION["user_id"]){
+//   header("location: {$hostname}/admin/post.php");
+//    }
+//}
+$post=new posts();
+$type='post';
+$res=$post->showPosts($type);
  ?>
 <div id="admin-content">
   <div class="container">
@@ -20,7 +23,7 @@ if($_SESSION["user_role"]=='0'){
         <h1 class="admin-heading">Update Post</h1>
     </div>
     <div class="col-md-offset-3 col-md-6">
-
+            <?php foreach($res as $row){ ?>
         <!-- Form for show edit-->
         <form action="save-update-post.php?id=<?php echo $row['post_id'];?>" method="POST" enctype="multipart/form-data" autocomplete="off">
             <div class="form-group">
@@ -29,7 +32,7 @@ if($_SESSION["user_role"]=='0'){
             <div class="form-group">
                 <label for="exampleInputTile">Title</label>
                 <input type="text" name="post_title"  class="form-control" id="exampleInputUsername" value="<?php echo isset($_POST['post_title'])? $_POST['post_title']:$row['title'];?>" required>
-              
+
             </div>
             <div class="form-group">
                 <label for="exampleInputPassword1"> Description</label>
@@ -42,20 +45,9 @@ if($_SESSION["user_role"]=='0'){
                 <select class="form-control" name="category">
                     <option disabled> Select Category</option>
                   <?php
-                  include "config.php";
-                  $sql1="SELECT * FROM category";
-                  $result1=mysqli_query($conn,$sql1) or die("Query failed.");
 
-                  if(mysqli_num_rows($result1)>0){
-                    while ($row1=mysqli_fetch_assoc($result1)){
-                        if($row['category']==$row1['category_id']){
-                          $selected= "selected";
-                        }else{
-                            $selected= "";
-                        }
-                        echo "<option {$selected} value='{$row1['category_id']}'>{$row1['category_name']}</option>";
-                    }
-                  }
+                  $category=new categories();
+                  $category->selectBox_category();
                   ?>
                 </select>
                 <input type="hidden" name="old-category" value="<?php echo $row['category'];?>">
@@ -71,9 +63,7 @@ if($_SESSION["user_role"]=='0'){
         <!-- Form End -->
           <?php
         }
-      }else{
-        echo "Result Not Found";
-      }
+
       ?>
       </div>
     </div>

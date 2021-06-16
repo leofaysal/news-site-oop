@@ -1,6 +1,6 @@
 <?php include 'header.php';
-  include 'config.php';
-//  include 'admin/classes.php';
+
+
   if(isset($_GET['cid'])){
 
       $type="category";

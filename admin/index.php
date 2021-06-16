@@ -1,9 +1,12 @@
 <?php
 
 require_once ('classes.php');
-if(!session_id()){
-  session_start();
-}
+
+// if(!session_id()){
+//   session_start();
+// }
+ //$error_message="";
+
   $session=new Session();
 
   // if(!$session->is_signed_in){
@@ -14,13 +17,11 @@ if(isset($_POST['login'])){
   $password=trim(md5($_POST['password']));
   $user= new user();
   $user_record=$user->verify_user($username,$password);
-  //print_r($user_record);
-  //die();
-  //$user_found=array_shift($user_record);
+
   if($user_record){
 
     $session->login($user_record);
-    //echo $session->username;
+
   header("Location:http://localhost/news-site-oops/admin/post.php");
   }else{
     $error_message="Username or Password incorrect";
@@ -41,8 +42,14 @@ else{
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>ADMIN | Login</title>
         <link rel="stylesheet" href="../css/bootstrap.min.css" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="font/font-awesome-4.7.0/css/font-awesome.css">
         <link rel="stylesheet" href="../css/style.css">
+      
+
+
     </head>
 
     <body>
@@ -64,12 +71,21 @@ else{
                             </div>
                             <input type="submit" name="login" class="btn btn-primary" value="login" />
                            <input type="submit" class="btn btn-primary" name="signup" value="Sign Up">
+
+
                         </form>
                         <!-- /Form  End -->
-
+                        <?php if(isset($error_message)){ ?>
+                        <div class='alert alert-danger alert-dismissible show' role='alert'> <?php echo $error_message; ?>
+                          <button class='close' data-dismiss='alert' aria-label='close'>
+                          <span aria-hidden='true'>&times;</span>
+                        </button></div>
+                       <?php }  ?>
                     </div>
                 </div>
             </div>
         </div>
-    </body>
+        <!-- JavaScript Bundle with Popper -->
+
+</body>
 </html>

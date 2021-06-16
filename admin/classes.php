@@ -1,9 +1,6 @@
 <?php
 
-require_once "config.php";
-if(!session_id()){
-  session_start();
-}
+
 
 class db_connect // database connection class
 {
@@ -16,8 +13,8 @@ class db_connect // database connection class
 
     private $mysqli;
     private $auth;
-      public $conn;
-
+    public $conn;
+    public $hostname= "http://localhost/news-site-oops";
 
     function __construct()
     {
@@ -95,25 +92,36 @@ class db_connect // database connection class
     return $row;
   }
 
-   function pagination($table,$url,$type='all'){
+   function pagination($table,$type='all',$role=null){
+  //  $session=new Session;
      $limit=3;
      $where='';
-     if(isset($_SESSION['user_role'])){
-       if($_SESSION['user_role']=='0'){
-         $where= " WHERE author={$_SESSION['user_id']}";
+     $url=$this->current_page();
+     if(isset($role)){
+
+       if($role =='0'){
+          $type =null;
+         $where= " WHERE author={$user_id}";
+
        }else{
+        if($role =='1'){
          $where='';
        }
      }
-     if ($type=='author'){
-        $where= " WHERE author={$_GET['aid']}";
-     }
+   }
 
+     // // if ($type=='author'){
+     // //    $where= " WHERE author={$_GET['aid']}";
+      if ($type=='category'){
+        $where='';
+      }
+
+ echo $table . $type;
     $sql="SELECT * FROM $table
            $where ";
- //echo $sql;
+    echo $sql;
     $res= $this->run_query($sql);
-  //  print_r($res);
+    print_r($res);
     if ($this->rows_num($res)>0){
     $total_records=$this->rows_num($res);
 
@@ -128,7 +136,7 @@ class db_connect // database connection class
       if($page>1){
         $output.="<li><a href='$url?page=".($page-1)."'>Prev</a></li>";
       }
-  //  if($total_record>$limit){
+
 
       for($i=1;$i<=$total_pages;$i++){ //to show pages tabs
         if($i==$page){
@@ -138,7 +146,7 @@ class db_connect // database connection class
         }
         $output.="<li><a $cls href='$url?page=$i'>$i</a></li>";
       }
-  //  }
+
     if($total_pages>$page){
       $output.="<li><a href='$url?page=".($page+1)."'>Next</a></li>";
     }
@@ -146,59 +154,53 @@ class db_connect // database connection class
       echo $output;
 
 }
+  function current_page(){  //returns url of the current page
+    return basename($_SERVER['PHP_SELF']) ;
+}
 
-// function find_by_id(){
-//   $page=basename($_SERVER['PHP_SELF']) ;
-//
-//   switch($page){
-//     case "single.php":
-//     if(isset($_GET['id'])){
-//       $sql_title="SELECT * FROM post WHERE post_id={$_GET['id']}";
-//       $result_title=mysqli_query($conn,$sql_title) or die (" TITLE QUERY FAILED");
-//       $row_title=mysqli_fetch_assoc($result_title);
-//       $page_title=$row_title['title'];
-//     }else{
-//       $page_title="No Post Found";
-//     }
-//     break;
-//     case "category.php":
-//     if(isset($_GET['cid'])){
-//       $sql_title="SELECT * FROM category WHERE category_id={$_GET['cid']}";
-//       $result_title=mysqli_query($conn,$sql_title) or die (" TITLE QUERY FAILED");
-//       $row_title=mysqli_fetch_assoc($result_title);
-//       $page_title=$row_title['category_name'] ."  News";
-//     }else{
-//       $page_title="No Post Found";
-//     }
-//     break;
-//     case "author.php":
-//     if(isset($_GET['aid'])){
-//       $sql_title="SELECT * FROM user WHERE user_id={$_GET['aid']}";
-//       $result_title=mysqli_query($conn,$sql_title) or die (" TITLE QUERY FAILED");
-//       $row_title=mysqli_fetch_assoc($result_title);
-//       $page_title= "News By " .$row_title['first_name'] . " ".$row_title['last_name'] ;
-//     }else{
-//       $page_title="No Post Found";
-//     }
-//     break;
-//     case "search.php":
-//
-//     if(isset($_GET['search'])){
-//
-//       $page_title=$_GET['search'] ;
-//     }else{
-//       $page_title="No Post Found";
-//     }
-//     break;
-//     default:
-//       $page_title= "NEWS SITE";
-//     break;
-//   }
-//
-// }
+function page_display_title($page_title='NEWS SITE'){   //display dyname title on front end
+  $where="";
+  if($this->current_page()=='search.php'){
+      $page_title= "{$_GET['search']}";
+    }
+
+  else if($this->current_page()=='single.php'){
+    $table="post";
+    $where= " WHERE post_id={$_GET['id']}";
+     $row_title=$this->find_by_id($table,$where);
+     $page_title=$row_title['title'];
+  }
+  else  if($this->current_page()=='category.php'){
+      $table="category";
+      $where= " WHERE category_id={$_GET['cid']}";
+       $row_title=$this->find_by_id($table,$where);
+       $page_title=$row_title['category_name'] ."  News";
+   }
+    else if($this->current_page()=='author.php'){
+        $table="user";
+        $where= " WHERE user_id={$_GET['aid']}";
+         $row_title=$this->find_by_id($table,$where);
+        $page_title= "News By " .$row_title['first_name'] . " ".$row_title['last_name'] ;
+      }
+    return $page_title;
 
 }
-//  $db = new db_connect();
+
+  function find_by_id($table,$where){
+
+    $sql="SELECT * FROM $table $where";
+    $result=$this->run_query($sql);
+      //  $row=mysqli_fetch_assoc($result);
+      if($this->rows_num($result)>0){
+        foreach($result as $row){
+          return $row;
+        }
+      }
+
+    }
+
+}
+ $db = new db_connect();
 class user extends db_connect //user class
 {
     public $userid;
@@ -221,7 +223,7 @@ function setuser($firstname , $lastname , $username , $pass , $role)
     $this->role = $role;
 
 }
-function insert($post) // use to insert user in database
+function insert() // use to insert user in database
 {
     global $db;
     $try = new db_connect();
@@ -229,11 +231,11 @@ function insert($post) // use to insert user in database
 
 
    // $userid=mysqli_real_escape_string($db->conn,$post['user_id']);
-    $fname=mysqli_real_escape_string($try->sq_conn(),$post['fname']);
-    $lname=mysqli_real_escape_string($try->sq_conn(),$post['lname']);
-    $pass = mysqli_real_escape_string($try->sq_conn(),md5($post['password']));
-    $username=mysqli_real_escape_string($try->sq_conn(),$post['user']);
-    $role=mysqli_real_escape_string($try->sq_conn(),$post['role']);
+    $fname=mysqli_real_escape_string($try->sq_conn(),$_POST['fname']);
+    $lname=mysqli_real_escape_string($try->sq_conn(),$_POST['lname']);
+    $pass = mysqli_real_escape_string($try->sq_conn(),md5($_POST['password']));
+    $username=mysqli_real_escape_string($try->sq_conn(),$_POST['user']);
+    $role=mysqli_real_escape_string($try->sq_conn(),$_POST['role']);
 
 
      $sql = "SELECT * FROM user WHERE username = '$username'";
@@ -389,10 +391,16 @@ public function verify_user($username,$password){
   $username=mysqli_real_escape_string($try->sq_conn(),$username);
   $password=mysqli_real_escape_string($try->sq_conn(),$password);
   $sql="SELECT * FROM user WHERE username='{$username}' AND password='{$password}'";
- //echo $sql;
+
   $result=$try->run_query($sql);
- //print_r($result);
-  return !empty($result)? $result : false ;
+
+  if ($try->rows_num($result)>0){
+    return $result;
+  }
+  else{
+    return false;
+  }
+
 }
 
 }
@@ -443,6 +451,8 @@ if(!empty($_SESSION['user_role'])){
 $where = '';
 if($type == 'all') {
       $where = "";
+}else if($type == 'post') {
+      $where = " WHERE post.post_id = {$_GET['id']} ";
 }
 else if($type == 'category') {
       $where = " WHERE post.category = {$_GET['cid']} ";
@@ -481,8 +491,7 @@ else if($type == 'author') {
        return $array;
    }
 
-  // print_r($res);
-  // return $res;
+
 }
 function insert_post() // use to insert data into the post table of database
 {
@@ -571,7 +580,7 @@ function insert_post() // use to insert data into the post table of database
 
 
 
-function update_post($post , $image_name)// use to update selective post from database
+function update_post($image_name)// use to update selective post from database
 {
   global $db;
 
@@ -579,17 +588,17 @@ function update_post($post , $image_name)// use to update selective post from da
  //                               it is sending to save-update-post then it is coming with image from save-update-post
 
  $try = new db_connect();
- $title = mysqli_real_escape_string($try->sq_conn() , $post['post_title']);
- $description = mysqli_real_escape_string($try->sq_conn() , $post['postdesc']);
- $category = mysqli_real_escape_string($try->sq_conn() , $post['category']);
- $post_id = mysqli_real_escape_string($try->sq_conn(), $post['post_id']);
+ $title = mysqli_real_escape_string($try->sq_conn() , $_POST['post_title']);
+ $description = mysqli_real_escape_string($try->sq_conn() , $_POST['postdesc']);
+ $category = mysqli_real_escape_string($try->sq_conn() , $_POST['category']);
+ $post_id = mysqli_real_escape_string($try->sq_conn(), $_POST['post_id']);
 
 
  $sql = "SELECT * FROM post WHERE title = '$title' And post_id != '$post_id'";
  $res = $try->run_query($sql);
  if($try->rows_num($res) > 0)
  {
-   echo "Title is Already Exist..!!";
+   echo "Title Already Exist..!!";
 
  }
 else
@@ -600,11 +609,11 @@ else
 
   if($try->run_query($sql))
 {
-  if($post['old-category']!=$post['category'])
+  if($_POST['old-category']!=$_POST['category'])
     {
 
-      $sql .="UPDATE category SET post=post-1 WHERE category_id='".$post['old-category']."';";
-      $sql .="UPDATE category SET post=post+1 WHERE category_id='".$post['category']."';";
+      $sql .="UPDATE category SET post=post-1 WHERE category_id='".$_POST['old-category']."';";
+      $sql .="UPDATE category SET post=post+1 WHERE category_id='".$_POST['category']."';";
       $result= mysqli_multi_query($try->sq_conn(),$sql);
       if($result)
       {
@@ -624,11 +633,8 @@ else
     echo "query failed..!!";
   }
 
-}
-}
-
-
-
+    }
+  }
 
 }
 
@@ -652,23 +658,31 @@ class categories extends db_connect // class of category table
       return true;
   }
 
-   function showCategory()
+   function showCategory($type)
   {
 
       global $db;
       $try = new db_connect();
-      $limit=3;
-      if(isset($_GET['page'])){
-        $page=$_GET['page'];
-      } else{
-        $page=1;
+      $condition="";
+      if ($type=='backend'){
+        $limit=3;
+        if(isset($_GET['page'])){
+          $page=$_GET['page'];
+        } else{
+          $page=1;
+        }
+        $start=($page-1)*$limit;
+      $condition= "LIMIT $start, $limit";
+      } else if ($type=='frontend'){
+        $condition=" WHERE post > 0";
       }
-      $start=($page-1)*$limit;
-      $sql = "SELECT * FROM category
-      LIMIT $start, $limit";
-      $res =  $try->run_query($sql) or die("Query Failed");;
 
-      return $res;
+      $sql = "SELECT * FROM category
+             $condition";
+
+      $res =  $try->run_query($sql) or die("Query Failed");
+
+      return $try->rows_num($res)> 0 ? $res : false;
 
   }
   function create_category()// use to create category
@@ -689,8 +703,7 @@ class categories extends db_connect // class of category table
     else
     {
       $sql = "INSERT INTO category (category_name) VALUES ('$category')";
-    //  echo $sql;
-    //  die();
+
       if($try->run_query($sql))
       {
         header("location:http://localhost/news-site-oops/admin/category.php");
@@ -763,10 +776,11 @@ class categories extends db_connect // class of category table
     public  $user_id;
     public $user_role;
     public $username;
+    public $password;
 
 
     function __construct(){
-    //  session_start();
+     session_start();
      $this->check_login();
     }
 
@@ -779,12 +793,11 @@ class categories extends db_connect // class of category table
        if(!empty($user_record)){
            while($row=mysqli_fetch_assoc($user_record)){
 
-           $this->username= $_SESSION["username"]=$row['username'];
-           $this->user_id= $_SESSION["user_id"]=$row['user_id'];
-           $this->user_role=$_SESSION["user_role"]=$row['role'];
-           $_SESSION["password"]=$_POST{'password'};
+            $_SESSION["username"]=$row['username'];
+            $_SESSION["user_id"]=$row['user_id'];
+            $_SESSION["user_role"]=$row['role'];
+            $_SESSION["password"]=$_POST{'password'};
             $this->signed_in=true;
-          //  die();
 
                          }
                     }
@@ -795,17 +808,19 @@ class categories extends db_connect // class of category table
         unset($_SESSION['user_id']);
         unset($_SESSION['username']);
         unset($_SESSION['user_role']);
-      //  unset($_SESSION['user_id']);
+        unset($_SESSION['user_id']);
            $this->signed_in=false;
       }
 
 
     private function check_login(){
-      $user=new user();
+
       if(isset($_SESSION['user_id'])){
 
       $this->user_id=$_SESSION['user_id'];
-
+      $this->username= $_SESSION["username"];
+      $this->user_role=$_SESSION["user_role"];
+      $this->password=$_SESSION["password"];
       $this->signed_in=true;
 
       }else {
@@ -815,8 +830,76 @@ class categories extends db_connect // class of category table
 
     }
 
+  }
+
+  //  $session= new Session();
+
+  class Settings extends db_connect{
+    public $websitename;
+    public $logo;
+    public $footerdesc;
+
+    function __construct(){
+      $this->display_setting();
+    }
+
+    function display_setting(){
+        $try=new db_connect();
+        $sql="SELECT * FROM settings";
+
+        $result=$try->run_query($sql) or die("Query Failed.");
 
 
+        foreach($result as $table_field){
+
+         $this->websitename= $table_field['websitename'];
+          $this->logo= $table_field['logo'];
+           $this->footerdesc= $table_field['footerdesc'];
+         }
+
+    }
+
+    function change_settings(){
+      $try=new db_connect();
+      if(empty($_FILES['logo']['name'])){
+      $file_name=$_POST['old_logo'];
+      }else{
+        $errors=array();
+        $file_name=$_FILES['logo']['name'];
+        $file_size=$_FILES['logo']['size'];
+        $file_tmp=$_FILES['logo']['tmp_name'];
+        $file_type=$_FILES['logo']['type'];
+        $file_ext= strtolower(end(explode('.',$file_name)));
+        $extensions=array("jpeg","jpg","png");
+
+        if(in_array($file_ext,$extensions)=== false){
+          $error[]="This extension file is not allowed,Please choose a JPG or PNG file.";
+        }
+        if($file_size>2097152){
+            $error[]="File size must be 2MB or lower.";
+          }
+            if(empty($errors)== true){
+              move_uploaded_file ($file_tmp,"images/".$file_name);
+            }
+            else{
+              print_r($errors);
+              die();
+            }
+      }
+
+       $sql="UPDATE settings SET websitename='{$_POST["website_name"]}',logo='{$file_name}',footerdesc='{$_POST["footer_desc"]}'";
+
+      $result=$try->run_query($sql);
+
+       if ($result){
+        header("location:http://localhost/news-site-oops/admin/post.php");
+      }else{
+        echo "Query Failed";
+      }
+
+    }
 
   }
+
+
 ?>

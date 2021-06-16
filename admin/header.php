@@ -1,15 +1,8 @@
-<?php ob_start();
-//include "config.php";
+<?php //ob_start();
+
 require_once "classes.php";
-if(!session_id()){
-  session_start();
-}
+
 $session= new Session();
-
-echo $session->username;
-
-
-
 
 ?>
 

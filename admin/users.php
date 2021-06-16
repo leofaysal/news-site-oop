@@ -1,6 +1,5 @@
 <?php include "header.php";
-include "config.php";
-include "classes.php";
+
 ?>
 
 
@@ -27,8 +26,7 @@ include "classes.php";
                       <tbody>
                         <?php
 
-                         //  $serial=$offset+1;
-                         // while($row=mysqli_fetch_assoc($result)) {
+
                          $user=new user();
                          $res=$user->find_all_users();
                          foreach($res as $row){
@@ -65,9 +63,9 @@ include "classes.php";
                   </table>
                   <?php
 
-                  $db=new db_connect();
-                    $url=basename($_SERVER['PHP_SELF']);
-                  $db->pagination('user',$url);
+                // $db=new db_connect();
+                  //  $url=basename($_SERVER['PHP_SELF']);
+                  $db->pagination('user',"author");
                   ?>
 
               </div>
