@@ -13,13 +13,9 @@ if($_SESSION["user_role"]=='0'){
               <div class="col-md-offset-3 col-md-6">
                 <!-- Datebase configuration to update category -->
                 <?php
-                include "config.php";
-                $cat_id=$_GET['id'];
-                $sql="SELECT * FROM category where category_id={$cat_id}";
-                $result=mysqli_query($conn,$sql);
-                if(mysqli_num_rows($result)>0){
-                  $row=mysqli_fetch_assoc($result);
-
+                 $category=new categories();
+                 $res=$category->showCategory('frontend');
+                 foreach($res as $row){
                 ?>
                   <form action="<?php $_SERVER['PHP_SELF'];?>" method ="POST">
                       <div class="form-group">
@@ -37,7 +33,7 @@ if($_SESSION["user_role"]=='0'){
 
                if(isset($_POST['submit'])){
                  $cat= new categories();
-                 $cat-> update_category($_POST);
+                 $cat-> update_category();
                }
                  ?>
                 </div>

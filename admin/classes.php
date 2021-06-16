@@ -92,19 +92,19 @@ class db_connect // database connection class
     return $row;
   }
 
-   function pagination($table,$type='all',$role=null){
+   function pagination($table,$type=''){
   //  $session=new Session;
      $limit=3;
      $where='';
      $url=$this->current_page();
-     if(isset($role)){
+     if(isset($_SESSION['user_role'])){
 
-       if($role =='0'){
-          $type =null;
-         $where= " WHERE author={$user_id}";
+       if($_SESSION['user_role']==0){
+        //  $type =null;
+         $where= " WHERE author={$_SESSION['user_id']}";
 
        }else{
-        if($role =='1'){
+        if($_SESSION['user_role'] ==1){
          $where='';
        }
      }
@@ -112,11 +112,11 @@ class db_connect // database connection class
 
      // // if ($type=='author'){
      // //    $where= " WHERE author={$_GET['aid']}";
-      if ($type=='category'){
-        $where='';
-      }
+      // if ($type=='category'){
+      //   $where='';
+      // }
 
- echo $table . $type;
+ echo $table . $type  . $_SESSION['user_role'];
     $sql="SELECT * FROM $table
            $where ";
     echo $sql;
@@ -429,10 +429,11 @@ function set_post($title , $description , $category , $post_date , $author , $po
     $this->post_img = $post_img;
 
 }
-public function showPosts($type = 'all'){
+public function showPosts($type = ''){
   global $db;
   $try = new db_connect();
   $limit=3;
+  $where = '';
 //  if($limit!=null){
     if(isset($_GET['page'])){
         $page=$_GET['page'];
@@ -443,15 +444,14 @@ public function showPosts($type = 'all'){
 
 
 
-if(!empty($_SESSION['user_role'])){
-  if($_SESSION['user_role']=="0"){
+if(isset($_SESSION['user_role'])){
+     if($_SESSION['user_role']==0){
       $where = " WHERE post.author={$_SESSION['user_id']} ";
-  }
+      }else if($_SESSION['user_role']==1){
+        $where='';
+      }
 }
-$where = '';
-if($type == 'all') {
-      $where = "";
-}else if($type == 'post') {
+else if($type == 'post') {
       $where = " WHERE post.post_id = {$_GET['id']} ";
 }
 else if($type == 'category') {
@@ -534,6 +534,7 @@ function insert_post() // use to insert data into the post table of database
      $fileName=$_FILES['fileToUpload']['name'];
      $fileSize=$_FILES['fileToUpload']['size'];
      $fileTmpName=$_FILES['fileToUpload']['tmp_name'];
+      $fileType=$_FILES['fileToUpload']['type'];
      $fileExt=strtolower(end(explode('.',$fileName)));
      $extType=array ("jpeg","png","gif","jpg");
      if(in_array($fileExt, $extType)=== false){
@@ -645,18 +646,27 @@ class categories extends db_connect // class of category table
   public $category;
   public $post;
 
-  function selectBox_category(){
+  function selectBox_category($cat_id){
   $try = new db_connect();
     $sql = "SELECT * FROM category";
+  //  echo $sql;
       $res =  $try->run_query($sql) or die("Query Failed");
+    //  print_r($res);
+      echo $cat_id;
+    //  die();
       if($try->rows_num($res)>0){
         while($row=mysqli_fetch_array($res)){
-          echo "<option value='".$row['category_id']."'>".$row['category_name']."</option>";
-        }
+          if($cat_id==$row['category_id']){
+                  $selected= "selected";
+                   }else{
+                     $selected= "";
+                   }
+          echo "<option {$selected} value='".$row['category_id']."'>".$row['category_name']."</option>";
+                 }
 
-      }
       return true;
   }
+}
 
    function showCategory($type)
   {

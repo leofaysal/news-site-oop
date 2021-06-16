@@ -13,13 +13,10 @@
                     $type="author";
                     $post=new posts();
                     $result=$post->showPosts($type);
-
                   ?>
                     <h2 class="page-heading"><?php  echo $result[0]['username']; ?></h2>
                   <?php
-
-                  foreach($result as $row){
-
+                    foreach($result as $row){
                   ?>
                     <div class="post-content">
                         <div class="row">

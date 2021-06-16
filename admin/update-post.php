@@ -45,16 +45,16 @@ $res=$post->showPosts($type);
                 <select class="form-control" name="category">
                     <option disabled> Select Category</option>
                   <?php
-
+                echo     $category_id=$row['category'];
                   $category=new categories();
-                  $category->selectBox_category();
+                  $category->selectBox_category($category_id);
                   ?>
                 </select>
                 <input type="hidden" name="old-category" value="<?php echo $row['category'];?>">
             </div>
             <div class="form-group">
-                <label for="">Post image</label>
-                <input type="file" name="new-image">
+                <label for="fileToUpload">Post image</label>
+                <input type="file" name="fileToUpload">
                 <img src="upload/<?php echo $row['post_img'];?>" height="150px">
                 <input type="hidden" name="old-image" value="<?php echo $row['post_img'];?>">
             </div>

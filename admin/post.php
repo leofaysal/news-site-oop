@@ -4,7 +4,7 @@
   if(!session_id()){
     session_start();
   }
-  $role= $session->user_role;
+
  ?>
 
   <div id="admin-content">
@@ -68,7 +68,7 @@
                   </table>
                    <?php
 
-                     $db->pagination('post','',$role);
+                     $db->pagination('post');
 
                 ?>
               </div>
