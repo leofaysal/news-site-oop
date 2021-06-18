@@ -3,7 +3,7 @@ include 'config.php';
 //include 'admin/classes.php';
 $type='single';
 $post= new posts();
-$result=$post->showPosts($type);
+$result=$post->showPosts_frontend($type);
  ?>
 
     <div id="main-content">

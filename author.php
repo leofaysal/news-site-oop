@@ -12,7 +12,7 @@
                   if(isset($_GET['aid'])){
                     $type="author";
                     $post=new posts();
-                    $result=$post->showPosts($type);
+                    $result=$post->showPosts_frontend($type);
                   ?>
                     <h2 class="page-heading"><?php  echo $result[0]['username']; ?></h2>
                   <?php
@@ -52,10 +52,7 @@
                         }
 }
 
-
-                $db=new db_connect();
-                  $url=basename($_SERVER['PHP_SELF']);
-                $db->pagination('post',$url,'author');
+                        $db->pagination();
 
 
                       ?>

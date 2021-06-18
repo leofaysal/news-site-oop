@@ -31,8 +31,8 @@ $post->insert_post();
                           <select name="category" class="form-control"  value="">
                               <option disabled> Select Category</option>
                               <?php
-                              $category= new categories;
-                              $category->selectBox_category();
+                              // $category= new categories;
+                              // $category->selectBox_category();
 
                               ?>
                           </select>

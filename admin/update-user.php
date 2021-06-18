@@ -1,5 +1,5 @@
 <?php include "header.php";
-include "classes.php";
+
 if($_SESSION["user_role"]=='0'){
   include "config.php";
 
@@ -27,14 +27,10 @@ if(isset($_POST['submit'])){
               </div>
               <div class="col-md-offset-4 col-md-4">
                   <?php
-                  include "config.php";
-                  $user_id=$_GET['id'];
-                  $sql="SELECT * FROM user WHERE user_id= {$user_id}";
+                  $user_id= "WHERE user_id=" .$_GET['id'];
+                   $row=$db->find_by_id('user',$user_id);
 
-                  $result=mysqli_query($conn,$sql) or die("Query Failed, Select user");
-                  if(mysqli_num_rows($result) > 0){
-                    while($row=mysqli_fetch_assoc($result)){
-                  ?>
+                   ?>
                   <!-- Form Start -->
                   <form  action="<?php echo $_SERVER['PHP_SELF'].'?id='.$row['user_id'];?>" method ="POST">
                       <div class="form-group">
@@ -57,28 +53,29 @@ if(isset($_POST['submit'])){
                       </div>
                       <div class="form-group">
                           <label>User Role</label>
-                          <select class="form-control" name="role" value="<?php echo isset($_POST['role'])? $_POST['role']:$row['role']; ?>">
-                            <?php
-                             if(isset($_POST['role'])){
-                               if($_POST['role']==1){
-                                   echo "<option value='1' selected>Admin</option>
-                                       <option value='0'>Moderater</option>";
-                               }else{
-                                 echo "<option value='1'>Admin</option>
-                                   <option value='0' selected>Moderater</option>";
-                               }
-                             }else{
-                               if($row['role']==1){
-                                   echo "<option value='1' selected>Admin</option>
-                                       <option value='0'>Moderater</option>";
-                               }else{
-                                 echo "<option value='1'>Admin</option>
-                                   <option value='0' selected>Moderater</option>";
-                               }
-                             }
 
-                            ?>
-                          </select>
+                          <select class="form-control" name="role" value="">
+                              <option value="">Select</option>
+                          <?php  if(isset($_POST['role'])){
+                                  if($_POST['role']==1){
+                                  echo "<option selected value='1'>Admin</option>
+                                       <option value='0'>Moderater</option>";
+                                  }else if($_POST['role']==0){
+                                    echo "<option value='1'>Admin</option>
+                                         <option selected value='0'>Moderater</option>";
+                                  }
+                          }else {
+                            if($row['role']==1){
+                                echo "<option value='1' selected>Admin</option>
+                                    <option value='0'>Moderater</option>";
+                            }else{
+                              echo "<option value='1'>Admin</option>
+                                <option value='0' selected>Moderater</option>";
+                            }
+                          }
+                          ?>
+                        </select>
+
                       </div>
                       <div class="form-group changepass" style="color:white; background:black; width:150px; padding:10px; border-radius:10px; cursor:pointer">Change Password</div>
 
@@ -96,8 +93,8 @@ if(isset($_POST['submit'])){
                   </form>
                   <!-- /Form -->
                 <?php
-                  }
-                }
+
+
                 ?>
               </div>
           </div>

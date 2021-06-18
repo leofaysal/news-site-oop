@@ -92,36 +92,35 @@ class db_connect // database connection class
     return $row;
   }
 
-   function pagination($table,$type=''){
+   function pagination($type=''){
   //  $session=new Session;
      $limit=3;
      $where='';
+     $table='post';
      $url=$this->current_page();
      if(isset($_SESSION['user_role'])){
 
-       if($_SESSION['user_role']==0){
-        //  $type =null;
-         $where= " WHERE author={$_SESSION['user_id']}";
+           if($_SESSION['user_role']==0){
+                $table="post";
+                 $where= " WHERE author={$_SESSION['user_id']}";
+           }else if($_SESSION['user_role'] ==1){
+              $where='';
+                   if($url=="post.php"){ $table="post";}
+                   elseif($url=="users.php"){ $table="user";}
+                    elseif($url=="category.php"){ $table="category";}
+              }
+      }else if (isset($_GET['aid'])){$where= " WHERE author={$_GET['aid']}"; $aid= "cid=".$_GET['aid'];}
+      else if (isset($_GET['cid'])){$where= " WHERE category={$_GET['cid']}";}
+      else if (isset($_GET['id'])){$where= " WHERE post_id={$_GET['id']}";}
+      else if (isset($_GET['search'])){$where = "  WHERE post.title LIKE '%{$_GET['search']}%' OR post.description LIKE '%{$_GET['search']}%' ";}
 
-       }else{
-        if($_SESSION['user_role'] ==1){
-         $where='';
-       }
-     }
-   }
 
-     // // if ($type=='author'){
-     // //    $where= " WHERE author={$_GET['aid']}";
-      // if ($type=='category'){
-      //   $where='';
-      // }
 
- echo $table . $type  . $_SESSION['user_role'];
     $sql="SELECT * FROM $table
            $where ";
-    echo $sql;
+
     $res= $this->run_query($sql);
-    print_r($res);
+  //  print_r($res);
     if ($this->rows_num($res)>0){
     $total_records=$this->rows_num($res);
 
@@ -160,23 +159,24 @@ class db_connect // database connection class
 
 function page_display_title($page_title='NEWS SITE'){   //display dyname title on front end
   $where="";
-  if($this->current_page()=='search.php'){
+  $url=$this->current_page();
+  if($url=='search.php'){
       $page_title= "{$_GET['search']}";
     }
 
-  else if($this->current_page()=='single.php'){
+  else if($url=='single.php'){
     $table="post";
     $where= " WHERE post_id={$_GET['id']}";
      $row_title=$this->find_by_id($table,$where);
      $page_title=$row_title['title'];
   }
-  else  if($this->current_page()=='category.php'){
+  else  if($url=='category.php'){
       $table="category";
       $where= " WHERE category_id={$_GET['cid']}";
        $row_title=$this->find_by_id($table,$where);
        $page_title=$row_title['category_name'] ."  News";
    }
-    else if($this->current_page()=='author.php'){
+    else if($url=='author.php'){
         $table="user";
         $where= " WHERE user_id={$_GET['aid']}";
          $row_title=$this->find_by_id($table,$where);
@@ -189,6 +189,7 @@ function page_display_title($page_title='NEWS SITE'){   //display dyname title o
   function find_by_id($table,$where){
 
     $sql="SELECT * FROM $table $where";
+    echo $sql;
     $result=$this->run_query($sql);
       //  $row=mysqli_fetch_assoc($result);
       if($this->rows_num($result)>0){
@@ -223,12 +224,11 @@ function setuser($firstname , $lastname , $username , $pass , $role)
     $this->role = $role;
 
 }
-function insert() // use to insert user in database
+function insert_user() // use to insert user in database
 {
     global $db;
     $try = new db_connect();
   //the form is coming from add-user.php page
-
 
    // $userid=mysqli_real_escape_string($db->conn,$post['user_id']);
     $fname=mysqli_real_escape_string($try->sq_conn(),$_POST['fname']);
@@ -266,7 +266,7 @@ else{
         }
         $start=($page-1)*$limit;
         $sql = "SELECT * FROM user
-        LIMIT $start, $limit";
+        ORDER BY user_id DESC LIMIT $start, $limit";
         $res =  $try->run_query($sql) or die("Query Failed");;
 
         return $res;
@@ -283,7 +283,12 @@ else{
         $lname=mysqli_real_escape_string($try->sq_conn(),$_POST['l_name']);
     //   $pass = mysqli_real_escape_string($try->sq_conn(),md5($post['new-password']));
         $username=mysqli_real_escape_string($try->sq_conn(),$_POST['username']);
-        $role=mysqli_real_escape_string($try->sq_conn(),$_POST['role']);
+       if($_SESSION['user_role']==0){
+         $role=$_SESSION['user_role'];
+       }else{
+         $role=mysqli_real_escape_string($try->sq_conn(),$_POST['role']);
+       }
+
       //  die(print_r($post));
 
 
@@ -311,9 +316,14 @@ else{
               $sql="UPDATE user SET first_name='{$fname}',last_name='{$lname}',username='{$username}', role='{$role}' ,password='{$new_password}' WHERE user_id={$userid} and password='{$old_password}'";
 
              }
-             if($try->run_query($sql))
-             {
-                header("Location:http://localhost/news-site-oops/admin/users.php");
+            
+             if($try->run_query($sql)){
+                      if($_SESSION['user_role']==0)
+                      {
+                        header("Location:http://localhost/news-site-oops/admin/post.php");
+                       }else{
+                           header("Location:http://localhost/news-site-oops/admin/users.php");
+                       }
              }
              else
              {
@@ -324,8 +334,6 @@ else{
     //  $sql = "UPDATE user SET first_name='$fname',last_name='$lname',username='$username', password ='$pass' , role='$role' WHERE user_id='$userid'";
 
     }
-
-
 
     function select_user($post)// use to select user and update if not same
     {
@@ -350,8 +358,9 @@ else{
        $this->update_user($post);
       }
 
-
     }
+
+
     function delete_user()
     {
       global $db;
@@ -429,11 +438,69 @@ function set_post($title , $description , $category , $post_date , $author , $po
     $this->post_img = $post_img;
 
 }
-public function showPosts($type = ''){
+
+public function show_post_backend($type="all"){
+  $try = new db_connect();
+  $where = '';
+  $limit=''; $start='';
+  $orderby='';  $range='';
+
+  if(isset($_SESSION['user_role'])){
+      if($type=="update"){
+         if($_SESSION['user_role']==0){
+             $where= " WHERE post.author={$_SESSION['user_id']} AND post_id= {$_GET['id']}";
+         }elseif($_SESSION['user_role']==1){
+           $where=" WHERE post_id= {$_GET['id']}";
+         }
+      }
+      elseif($type="all"){
+                 $limit=3;   $orderby=" ORDER BY post.post_id DESC  ";
+                if(isset($_GET['page'])){
+                    $page=$_GET['page'];
+                }else{
+                  $page=1;
+                }
+                $start=($page-1)*$limit;
+                $range= "LIMIT $start,$limit";
+
+        if($_SESSION['user_role']==0){
+            $where= " WHERE post.author={$_SESSION['user_id']}";
+        }elseif($_SESSION['user_role']==1){
+          $where="";
+        }
+      }
+    }
+    $sql= "SELECT post.post_id,post.title,post.category,post.post_date,post.description,post.post_img,post.author,
+          category.category_id,category.category_name,user.username FROM post
+          LEFT JOIN category ON post.category=category.category_id
+          LEFT JOIN user ON post.author=user.user_id
+          $where $orderby
+           $range";
+  // echo $sql;
+
+     $res = $try->run_query($sql);
+  //   print_r($res);
+
+
+     if($try->rows_num($res)>0)
+     {
+         while($rows = mysqli_fetch_assoc($res))
+         {
+             $array[] = $rows;
+
+         }
+         return $array;
+     }
+
+
+
+}
+public function showPosts_frontend($type = ''){
   global $db;
   $try = new db_connect();
   $limit=3;
   $where = '';
+   $orderby=" ORDER BY post.post_id DESC";
 //  if($limit!=null){
     if(isset($_GET['page'])){
         $page=$_GET['page'];
@@ -443,44 +510,43 @@ public function showPosts($type = ''){
     $start=($page-1)*$limit;
 
 
-
-if(isset($_SESSION['user_role'])){
-     if($_SESSION['user_role']==0){
-      $where = " WHERE post.author={$_SESSION['user_id']} ";
-      }else if($_SESSION['user_role']==1){
-        $where='';
-      }
-}
-else if($type == 'post') {
+ if($type == 'post') {
       $where = " WHERE post.post_id = {$_GET['id']} ";
+
 }
 else if($type == 'category') {
       $where = " WHERE post.category = {$_GET['cid']} ";
+
 }
 else if($type == 'author') {
       $where = " WHERE post.author = {$_GET['aid']} ";
+
 }else if($type == 'search') {
 
  $search_term=mysqli_real_escape_string($try->sq_conn(),$_GET['search']);
-      $where = "   WHERE post.title LIKE '%{$search_term}%' OR post.description LIKE '%{$search_term}%' ";
-}else if($type == 'single') {
+$where = "   WHERE post.title LIKE '%{$search_term}%' OR post.description LIKE '%{$search_term}%' ";
 
+}else if($type == 'single') {
   $where = "  WHERE post.post_id={$_GET['id']}";
+  $orderby="";
 }else if($type == 'recent post'){
     $start= 0;
     $limit= 5;
+
   }
 
 
-  $sql= "SELECT post.post_id,post.title,post.post_date,post.description,post.post_img,post.author,
+  $sql= "SELECT post.post_id,post.title,post.category,post.post_date,post.description,post.post_img,post.author,
         category.category_id,category.category_name,user.username FROM post
         LEFT JOIN category ON post.category=category.category_id
         LEFT JOIN user ON post.author=user.user_id
         $where
-        ORDER BY post.post_id LIMIT $start, $limit";
-
+        LIMIT $start, $limit";
+echo $sql;
 
    $res = $try->run_query($sql);
+
+
    if($try->rows_num($res)>0)
    {
        while($rows = mysqli_fetch_assoc($res))
@@ -646,13 +712,13 @@ class categories extends db_connect // class of category table
   public $category;
   public $post;
 
-  function selectBox_category($cat_id){
+  function selectBox_category($category_id){
   $try = new db_connect();
     $sql = "SELECT * FROM category";
   //  echo $sql;
       $res =  $try->run_query($sql) or die("Query Failed");
     //  print_r($res);
-      echo $cat_id;
+      $cat_id=$category_id;
     //  die();
       if($try->rows_num($res)>0){
         while($row=mysqli_fetch_array($res)){
@@ -662,10 +728,10 @@ class categories extends db_connect // class of category table
                      $selected= "";
                    }
           echo "<option {$selected} value='".$row['category_id']."'>".$row['category_name']."</option>";
-                 }
+          }
 
       return true;
-  }
+        }
 }
 
    function showCategory($type)
@@ -683,7 +749,7 @@ class categories extends db_connect // class of category table
         }
         $start=($page-1)*$limit;
       $condition= "LIMIT $start, $limit";
-      } else if ($type=='frontend'){
+    } else if ($type=='menu'){
         $condition=" WHERE post > 0";
       }
 

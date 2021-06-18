@@ -1,5 +1,5 @@
 <?php include "header.php";
- include "classes.php";
+
 
  ?>
   <div id="admin-content">
@@ -20,7 +20,7 @@
                   <!-- /Form End -->
                   <?php
                   if (isset($_POST['save'])){
-                  //  session_start();
+                
                     $cat= new categories();
                     $cat->create_category();
                   }

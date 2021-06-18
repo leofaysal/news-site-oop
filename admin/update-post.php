@@ -13,8 +13,8 @@
 //    }
 //}
 $post=new posts();
-$type='post';
-$res=$post->showPosts($type);
+$type='update';
+$res=$post->show_post_backend($type);
  ?>
 <div id="admin-content">
   <div class="container">
@@ -45,12 +45,13 @@ $res=$post->showPosts($type);
                 <select class="form-control" name="category">
                     <option disabled> Select Category</option>
                   <?php
-                echo     $category_id=$row['category'];
+
                   $category=new categories();
                   $category->selectBox_category($category_id);
                   ?>
                 </select>
                 <input type="hidden" name="old-category" value="<?php echo $row['category'];?>">
+                  <?php echo $category_id=$row['category'];?>
             </div>
             <div class="form-group">
                 <label for="fileToUpload">Post image</label>

@@ -4,6 +4,10 @@ include "header.php";
 if($_SESSION["user_role"]=='0'){
   header("Location:{$hostname}/admin/post.php");
 }
+  if(isset($_POST['save'])){
+    $user=new user();
+    $user->insert_user();
+}
  ?>
   <div id="admin-content">
       <div class="container">
@@ -34,19 +38,30 @@ if($_SESSION["user_role"]=='0'){
                       <div class="form-group">
                           <label>User Role</label>
                           <select class="form-control" name="role" >
-                              <option value="0">moderater</option>
-                              <option value="1">admin</option>
+
+                              <option selected value="">Select</option>"
+                        <?php  if(isset($_POST['role'])){
+                                    if($_POST['role']==1){
+                                    echo "<option selected value='1'>Admin</option>
+                                         <option value='0'>Moderater</option> ";
+                                    }else if($_POST['role']==0){
+                                      echo "<option value='1'>Admin</option>
+                                           <option selected value='0'>Moderater</option>";
+                                    }
+                             } else{
+                            echo "<option value='1'>Admin</option>
+                              <option value='0'>Moderater</option>";
+                             }
+
+                        ?>
                           </select>
                       </div>
                       <input type="submit"  name="save" class="btn btn-primary" value="Save" required />
                   </form>
                    <!-- Form End-->
                    <?php
-                   include "classes.php";
-                   if(isset($_POST['save'])){
-                     $user=new user();
-                     $user->insert($_POST);
-                   }
+
+
                    ?>
                </div>
            </div>

@@ -62,10 +62,7 @@
                        <?php }?>
                   </table>
                   <?php
-
-                // $db=new db_connect();
-                  //  $url=basename($_SERVER['PHP_SELF']);
-                  $db->pagination('user',"author");
+                  $db->pagination();
                   ?>
 
               </div>

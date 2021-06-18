@@ -23,7 +23,7 @@
 
                     $post=new posts();
 
-                    $result=$post->showPosts();
+                    $result=$post->show_post_backend();
 
                  ?>
                       <thead>
@@ -68,7 +68,7 @@
                   </table>
                    <?php
 
-                     $db->pagination('post');
+                     $db->pagination();
 
                 ?>
               </div>

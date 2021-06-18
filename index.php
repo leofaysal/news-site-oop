@@ -9,7 +9,7 @@ $post= new posts();
                     <!-- post-container -->
                     <div class="post-container">
                       <?php
-                      $result=$post->showPosts();
+                      $result=$post->showPosts_frontend();
 
                       foreach($result as $row){
 
@@ -46,9 +46,9 @@ $post= new posts();
                         </div>
                         <?php
                             }
-                           $db->pagination('post');
+                           $db->pagination();
                           ?>
-                      
+
                     </div><!-- /post-container -->
                 </div>
                 <?php include 'sidebar.php'; ?>

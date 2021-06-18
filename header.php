@@ -59,7 +59,7 @@ $db= new db_connect();
                   $cat_id=$_GET['cid'];
               }
                 $active="";
-                $type='frontend';
+                $type='menu';
                 $category= new categories();
                 $result=$category->showCategory($type);
 
@@ -86,7 +86,7 @@ $db= new db_connect();
                       }
                     ?>
                 </ul>
-              
+
             </div>
         </div>
     </div>

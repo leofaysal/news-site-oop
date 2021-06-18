@@ -5,7 +5,7 @@ if(isset($_GET['search'])){
 
     $type="search";
     $post=new posts();
-    $result=$post->showPosts($type);
+    $result=$post->showPosts_frontend($type);
 } ?>
     <div id="main-content">
       <div class="container">
@@ -51,7 +51,7 @@ if(isset($_GET['search'])){
                     </div>
                     <?php
                         }
-
+                            $db->pagination();
                       ?>
                 </div><!-- /post-container -->
             </div>

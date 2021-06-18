@@ -1,4 +1,8 @@
 <?php include "header.php";
+if(isset($_POST['submit'])){
+  $user=new user();
+  $user->update_user();
+}
 
 ?>
   <div id="admin-content">
@@ -8,7 +12,9 @@
                   <h1 class="admin-heading">Modify User Details</h1>
               </div>
               <div class="col-md-offset-4 col-md-4">
-
+              <?php  $user_id= "WHERE user_id=" .$_SESSION['user_id'];
+                 $row=$db->find_by_id('user',$user_id);
+                 ?>
                   <!-- Form Start -->
                   <form  action="<?php echo $_SERVER['PHP_SELF'];?>" method ="POST">
                       <div class="form-group">
@@ -44,7 +50,7 @@
                   <!-- /Form -->
 
 
-                ?>
+            
               </div>
           </div>
       </div>

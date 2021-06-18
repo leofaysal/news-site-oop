@@ -5,8 +5,8 @@
 
       $type="category";
       $post=new posts();
-      $result=$post->showPosts($type);
-  }
+      $result=$post->showPosts_frontend($type);
+
  ?>
     <div id="main-content">
       <div class="container">
@@ -52,7 +52,7 @@
                     <?php
 
                       }
-
+                      $db->pagination();
 
                       ?>
                 </div><!-- /post-container -->
@@ -61,4 +61,5 @@
         </div>
       </div>
     </div>
-<?php include 'footer.php'; ?>
+
+<?php } include 'footer.php'; ?>

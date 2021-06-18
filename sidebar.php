@@ -20,8 +20,8 @@
       //  include "admin/classes.php";
         $post=new posts();
         $type = 'recent post';
-        $result=$post->showPosts($type);
-       
+        $result=$post->showPosts_frontend($type);
+
         foreach($result as $row){
 
          ?>
