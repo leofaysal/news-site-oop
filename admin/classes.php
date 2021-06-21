@@ -97,6 +97,7 @@ class db_connect // database connection class
      $limit=3;
      $where='';
      $table='post';
+     $id='';
      $url=$this->current_page();
      if(isset($_SESSION['user_role'])){
 
@@ -109,10 +110,10 @@ class db_connect // database connection class
                    elseif($url=="users.php"){ $table="user";}
                     elseif($url=="category.php"){ $table="category";}
               }
-      }else if (isset($_GET['aid'])){$where= " WHERE author={$_GET['aid']}"; $aid= "cid=".$_GET['aid'];}
-      else if (isset($_GET['cid'])){$where= " WHERE category={$_GET['cid']}";}
-      else if (isset($_GET['id'])){$where= " WHERE post_id={$_GET['id']}";}
-      else if (isset($_GET['search'])){$where = "  WHERE post.title LIKE '%{$_GET['search']}%' OR post.description LIKE '%{$_GET['search']}%' ";}
+      }else if (isset($_GET['aid'])){$where= " WHERE author={$_GET['aid']}"; $id= "aid=".$_GET['aid'] . "&";}
+      else if (isset($_GET['cid'])){$where= " WHERE category={$_GET['cid']}"; $id= "cid=".$_GET['cid']."&";}
+      else if (isset($_GET['id'])){$where= " WHERE post_id={$_GET['id']}"; $id= "id=".$_GET['id']."&";}
+      else if (isset($_GET['search'])){$where = "  WHERE post.title LIKE '%{$_GET['search']}%' OR post.description LIKE '%{$_GET['search']}%' "; $id= "search=".$_GET['search']. "&";}
 
 
 
@@ -133,7 +134,7 @@ class db_connect // database connection class
     }
       $output="<ul class='pagination'>";
       if($page>1){
-        $output.="<li><a href='$url?page=".($page-1)."'>Prev</a></li>";
+        $output.="<li><a href='$url?".$id."page=".($page-1)."'>Prev</a></li>";
       }
 
 
@@ -143,11 +144,11 @@ class db_connect // database connection class
         }else{
           $cls="";
         }
-        $output.="<li><a $cls href='$url?page=$i'>$i</a></li>";
+        $output.="<li><a $cls href='$url?" .$id."page=$i'>$i</a></li>";
       }
 
     if($total_pages>$page){
-      $output.="<li><a href='$url?page=".($page+1)."'>Next</a></li>";
+      $output.="<li><a href='$url?".$id."page=".($page+1)."'>Next</a></li>";
     }
       $output.="</ul>";
       echo $output;
@@ -189,7 +190,7 @@ function page_display_title($page_title='NEWS SITE'){   //display dyname title o
   function find_by_id($table,$where){
 
     $sql="SELECT * FROM $table $where";
-    echo $sql;
+
     $result=$this->run_query($sql);
       //  $row=mysqli_fetch_assoc($result);
       if($this->rows_num($result)>0){
@@ -289,8 +290,6 @@ else{
          $role=mysqli_real_escape_string($try->sq_conn(),$_POST['role']);
        }
 
-      //  die(print_r($post));
-
 
       if(isset($_POST['old-password'])&& $_POST['new-password']){
         $old_password=mysqli_real_escape_string($try->sq_conn(),md5($_POST['old-password']));
@@ -305,9 +304,8 @@ else{
 
      if($try->rows_num($result)>0){
          // if input value exists
-     $this->error="Username already exists , choose another username";
-  //   echo "Username already exists , choose another username";
-    //  die();
+     $this->error="Username already exists, choose another username";
+
          }else{
            if(empty($old_password || $new_password)){
              $sql="UPDATE user SET first_name='{$fname}',last_name='{$lname}',username='{$username}',role='{$role}' WHERE user_id={$userid}";
@@ -316,7 +314,7 @@ else{
               $sql="UPDATE user SET first_name='{$fname}',last_name='{$lname}',username='{$username}', role='{$role}' ,password='{$new_password}' WHERE user_id={$userid} and password='{$old_password}'";
 
              }
-            
+
              if($try->run_query($sql)){
                       if($_SESSION['user_role']==0)
                       {
@@ -335,30 +333,7 @@ else{
 
     }
 
-    function select_user($post)// use to select user and update if not same
-    {
-      global $db;
-      $try = new db_connect();
-      // whole form values is coming from update-user.php
 
-        $userid=mysqli_real_escape_string($try->sq_conn(),$post['user_id']);
-        $fname=mysqli_real_escape_string($try->sq_conn(),$post['f_name']);
-        $lname=mysqli_real_escape_string($try->sq_conn(),$post['l_name']);
-        $username=mysqli_real_escape_string($try->sq_conn(),$post['username']);
-        $role=mysqli_real_escape_string($try->sq_conn(),$post['role']);
-
-      $sql = "SELECT * FROM user WHERE username = '$username' AND user_id != '$userid' ";
-      $res = $try->run_query($sql) or die("Query Failed.123.!");
-      if($try->rows_num($res)>0)
-      {
-       echo "Username Already Exist..!!";
-      }
-      else
-      {
-       $this->update_user($post);
-      }
-
-    }
 
 
     function delete_user()
@@ -411,6 +386,9 @@ public function verify_user($username,$password){
   }
 
 }
+
+
+
 
 }
 
@@ -542,7 +520,7 @@ $where = "   WHERE post.title LIKE '%{$search_term}%' OR post.description LIKE '
         LEFT JOIN user ON post.author=user.user_id
         $where
         LIMIT $start, $limit";
-echo $sql;
+
 
    $res = $try->run_query($sql);
 
@@ -717,9 +695,10 @@ class categories extends db_connect // class of category table
     $sql = "SELECT * FROM category";
   //  echo $sql;
       $res =  $try->run_query($sql) or die("Query Failed");
-    //  print_r($res);
+      print_r($res);
       $cat_id=$category_id;
-    //  die();
+
+
       if($try->rows_num($res)>0){
         while($row=mysqli_fetch_array($res)){
           if($cat_id==$row['category_id']){
@@ -727,10 +706,10 @@ class categories extends db_connect // class of category table
                    }else{
                      $selected= "";
                    }
+
           echo "<option {$selected} value='".$row['category_id']."'>".$row['category_name']."</option>";
           }
 
-      return true;
         }
 }
 
@@ -905,7 +884,11 @@ class categories extends db_connect // class of category table
       }
 
     }
-
+    public function user_restriction(){
+      if (!$this->is_signed_in()){
+        header("Location:http://localhost/news-site-oops/admin/");
+      }
+}
   }
 
   //  $session= new Session();

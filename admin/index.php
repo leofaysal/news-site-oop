@@ -2,26 +2,18 @@
 
 require_once ('classes.php');
 
-// if(!session_id()){
-//   session_start();
-// }
- //$error_message="";
-
   $session=new Session();
-
-  // if(!$session->is_signed_in){
-  //   header("Location:http://localhost/news-site-oops/admin/");
-  // }
+//  $session->user_restriction();
 if(isset($_POST['login'])){
   $username=trim($_POST['username']);
   $password=trim(md5($_POST['password']));
+
   $user= new user();
   $user_record=$user->verify_user($username,$password);
 
   if($user_record){
 
     $session->login($user_record);
-
   header("Location:http://localhost/news-site-oops/admin/post.php");
   }else{
     $error_message="Username or Password incorrect";
@@ -47,8 +39,6 @@ else{
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="font/font-awesome-4.7.0/css/font-awesome.css">
         <link rel="stylesheet" href="../css/style.css">
-      
-
 
     </head>
 
@@ -85,7 +75,7 @@ else{
                 </div>
             </div>
         </div>
-        <!-- JavaScript Bundle with Popper -->
+
 
 </body>
 </html>

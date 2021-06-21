@@ -13,9 +13,10 @@ if($_SESSION["user_role"]=='0'){
               <div class="col-md-offset-3 col-md-6">
                 <!-- Datebase configuration to update category -->
                 <?php
-                if(isset($_GET['']))
+                if(isset($_GET['cid'])){
                  $category=new categories();
-                 $res=$category->showCategory('update');
+                 $res=$category->showCategory();
+               }
                  foreach($res as $row){
                 ?>
                   <form action="<?php $_SERVER['PHP_SELF'];?>" method ="POST">

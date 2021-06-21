@@ -1,7 +1,7 @@
 <?php include "header.php";
 
 if($_SESSION["user_role"]=='0'){
-  include "config.php";
+
 
   $user_id=$_GET['id'];
   $sql2="SELECT author FROM post WHERE author={$user_id}";
