@@ -713,12 +713,13 @@ class categories extends db_connect // class of category table
         }
 }
 
-   function showCategory($type)
+   function showCategory($type='')
   {
 
       global $db;
       $try = new db_connect();
       $condition="";
+
       if ($type=='backend'){
         $limit=3;
         if(isset($_GET['page'])){
@@ -727,11 +728,15 @@ class categories extends db_connect // class of category table
           $page=1;
         }
         $start=($page-1)*$limit;
-      $condition= "LIMIT $start, $limit";
-    } else if ($type=='menu'){
+         $condition= " LIMIT $start, $limit";
+       }
+        else if ($type=='menu'){
         $condition=" WHERE post > 0";
-      }
-
+        }
+        else if ($type=='update'){
+        $condition=" WHERE category_id={$_GET['id']}";
+        }
+      
       $sql = "SELECT * FROM category
              $condition";
 
