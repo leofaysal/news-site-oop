@@ -690,7 +690,7 @@ class categories extends db_connect // class of category table
   public $category;
   public $post;
 
-  function selectBox_category($category_id){
+  function selectBox_category($category_id=''){
   $try = new db_connect();
     $sql = "SELECT * FROM category";
   //  echo $sql;
@@ -736,7 +736,7 @@ class categories extends db_connect // class of category table
         else if ($type=='update'){
         $condition=" WHERE category_id={$_GET['id']}";
         }
-      
+
       $sql = "SELECT * FROM category
              $condition";
 
